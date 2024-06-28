@@ -1,7 +1,7 @@
 {
-  "name": "media-streaming-project",
+  "name": "project-manager-app",
   "version": "1.0.0",
-  "description": "A full stack media streaming project",
+  "description": "A full stack project manager app",
   "main": "index.js",
   "type": "module",
   "scripts": {
