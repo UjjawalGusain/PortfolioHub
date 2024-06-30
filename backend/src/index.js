@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 import { app } from "./app.js"
 
 dotenv.config({
-    path: "./env"
+    path: "./.env"
 })
 
 
@@ -15,4 +15,4 @@ connect_database()
 })
 .catch((error) => {
     console.log(`MongoDB connection failed: ${error}`);
-})
+}) 

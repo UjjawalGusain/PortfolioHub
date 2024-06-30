@@ -11,12 +11,7 @@ const userSchema = new Schema({
         index: true,
         trim: true,
     },
-    firstName: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    lastName: {
+    fullname: {
         type: String,
         required: true,
         trim: true,
