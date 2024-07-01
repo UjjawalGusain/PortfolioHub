@@ -92,16 +92,19 @@ const loginUser = asyncHandler(async (req, res) => {
     // Send success response
 
    const {email, username, githubId, password} = req.body;
-   
+   console.log(req.body);
    // verifying if all required fields are filled
-   if([username, email, password, githubId].some((field) => 
-    field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
+
+    if((!(username || email || githubId) && password)) {
+        throw new ApiError(400, "One identification field and password field is required")
     }
+
 
     const foundUser = await User.findOne({
         $or: [{username}, {githubId}, {email}]
     })
+
+    // console.log(foundUser)    
 
     if(!foundUser) {
         throw new ApiError(404, "User not found");
@@ -113,9 +116,9 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Incorrect Password")
     }
 
-    const {refreshToken, accessToken} = await generateAccessTokenAndRefreshToken(user._id)
+    const {refreshToken, accessToken} = await generateAccessTokenAndRefreshToken(foundUser._id)
 
-    const newUser = User.findById(user._id).select("-password -refreshToken")
+    const newUser = await User.findById(foundUser._id).select("-password -refreshToken")
 
     const cookieOption = {
         httpOnly: true,
@@ -133,4 +136,28 @@ const loginUser = asyncHandler(async (req, res) => {
         "User Logged In Successfully"))
 })
 
-export {registerUser}
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const cookieOption = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res.status(200)
+           .clearCookie("refreshToken", cookieOption)
+           .clearCookie("accessToken", cookieOption)
+           .json(new ApiResponse(200, {}, "User Logged Out Successfully"))
+})
+
+export {registerUser, loginUser, logoutUser}
