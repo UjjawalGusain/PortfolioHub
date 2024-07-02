@@ -5,83 +5,108 @@ import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { isValidEmail, isValidGitHubId } from "../utils/validator.js";
 import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import { OtpVerification } from "../models/otp.model.js";
+import { sendOtpVerificationEmail } from "../utils/sendOtpVerificationEmail.js";
+import { generateAccessTokenAndRefreshToken } from "../utils/generateAccessTokenAndRefreshToken.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-    const {username, fullname, email, password, githubId} = req.body;
-    console.log(username);
+    try {
+        const { username, fullname, email, password, githubId } = req.body;
 
-    // verifying if all required fields are filled
-    if([username, fullname, email, password, githubId].some((field) => 
-    field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
+        if ([username, fullname, email, password, githubId].some((field) => field?.trim() === "")) {
+            throw new ApiError(400, "All fields are required");
+        }
+
+        if (!isValidEmail(email)) {
+            throw new ApiError(400, "Email not acceptable");
+        }
+
+        if (!isValidGitHubId(githubId)) {
+            throw new ApiError(400, "Github ID not acceptable");
+        }
+
+        const existedUser = await User.findOne({
+            $or: [{ username }, { email }, { githubId }]
+        });
+
+        if (existedUser) {
+            throw new ApiError(409, "Username/email/github already exists");
+        }
+
+        let profilePicUrl = "";
+        let coverImgUrl = "";
+
+        if (req.files && req.files.profilePic) {
+            const profilePicLocalPath = req.files.profilePic[0].path;
+            const profilePic = await uploadFileToCloudinary(profilePicLocalPath);
+            profilePicUrl = profilePic?.url || "";
+        }
+
+        if (req.files && req.files.coverImg) {
+            const coverImgLocalPath = req.files.coverImg[0].path;
+            const coverImg = await uploadFileToCloudinary(coverImgLocalPath);
+            coverImgUrl = coverImg?.url || "";
+        }
+
+        const newUser = await User.create({
+            fullname,
+            profilePic: profilePicUrl,
+            coverImg: coverImgUrl,
+            username: username.toLowerCase(),
+            email,
+            githubId,
+            password
+        });
+
+        newUser.verified = false;
+        await newUser.save();
+
+        // Send OTP email 
+        await sendOtpVerificationEmail(req, res);
+
+        return res.status(201).json(new ApiResponse(201, {}, "User registered successfully"));
+    } catch (error) {
+        console.error('Error during registration:', error);
+        if (error instanceof ApiError) {
+            throw error;
+        } else {
+            throw new ApiError(500, 'Registration failed. Please try again.');
+        }
     }
+});
 
-    if(!isValidEmail(email)) {
-        throw new ApiError(400, "Email not acceptable")
+const verifyOtp = asyncHandler(async (req, res) => {
+    try {
+        const { userOtp, email } = req.body;
+
+        const otpVer = await OtpVerification.findOne({ email });
+        if (!otpVer) {
+            throw new ApiError(404, "User not found in database");
+        }
+
+        const doesOtpMatch = await bcrypt.compare(userOtp, otpVer.otp);
+        if (!doesOtpMatch) {
+            throw new ApiError(400, "Wrong OTP");
+        }
+
+        const user = await User.findOneAndUpdate({ email }, { verified: true }, { new: true });
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        await OtpVerification.findByIdAndDelete(otpVer._id);
+
+        return res.status(200).json(new ApiResponse(200, user, "OTP verified"));
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        if (error instanceof ApiError) {
+            throw error; 
+        } else {
+            throw new ApiError(500, 'Registration failed. Please try again.');
+        }
     }
-
-    if(!isValidGitHubId(githubId)) {
-        throw new ApiError(400, "Github ID not acceptable")
-    }
-
-    //checking if the username exists already
-    const existedUser = await User.findOne({
-        $or: [{username}, {email}, {githubId}]
-    })
-
-    if(existedUser) {
-        throw new ApiError(409, "Username/email/github already exists")
-    }
-
-    let profilePicLocalPath;
-    if(req.files && Array.isArray(req.files.profilePic) && req.files.profilePic.length > 0) {
-        profilePicLocalPath = req.files.profilePic[0].path
-    }
-
-    let coverImgLocalPath;
-    if(req.files && Array.isArray(req.files.coverImg) && req.files.coverImg.length > 0) {
-        coverImgLocalPath = req.files.coverImg[0].path
-    }
-
-    const profilePic = await uploadFileToCloudinary(profilePicLocalPath)
-    const coverImg = await uploadFileToCloudinary(coverImgLocalPath)
-
-    const user = await User.create({
-        fullname,
-        profilePic: profilePic?.url || "",
-        coverImg: coverImg?.url || "",
-        username: username.toLowerCase(),
-        email,
-        githubId,
-        password
-    })
-
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    )
-
-    if(!createdUser) {
-        throw new ApiError(500, "Failed to register user")
-    }
-
-    return res.status(201).json(
-        new ApiResponse(200, createdUser, "User Registered Successfully")
-    )
-
-})
-
-const generateAccessTokenAndRefreshToken = async(userId) => {
-    const user = await User.findById(userId)
-
-    const refreshToken = user.generateRefreshToken()
-    const accessToken = user.generateAccessToken()
-
-    user.refreshToken = refreshToken
-
-    await user.save({validateBeforeSave: false})
-
-    return {refreshToken, accessToken}
-}
+});
 
 const loginUser = asyncHandler(async (req, res) => {
     // Take data from user (username, password)
@@ -201,4 +226,4 @@ const refreshAccessToken = asyncHandler( async(req, res) => {
     }
 })
 
-export {registerUser, loginUser, logoutUser, refreshAccessToken}
+export {registerUser, loginUser, logoutUser, refreshAccessToken, verifyOtp}

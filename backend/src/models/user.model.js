@@ -48,6 +48,10 @@ const userSchema = new Schema({
             type: String,
         }
     ],
+    verified: {
+        type: Boolean,
+        default: false,
+    },
     domains: [
         {
             type: String,
