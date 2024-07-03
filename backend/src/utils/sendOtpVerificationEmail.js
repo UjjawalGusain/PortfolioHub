@@ -31,9 +31,10 @@ export const sendOtpVerificationEmail = asyncHandler(async (req, _) => {
         const saltRounds = 10;
         const hashedOtp = await bcrypt.hash(otp, saltRounds);
         const newOtpVerification = new OtpVerification({
-            otp: hashedOtp,
+            otp: hashedOtp, 
             userId: req._id,
-            email: req.body.email
+            email: req.body.email,
+            isRegistered: true,
         });
 
         await newOtpVerification.save({validateBeforeSave: false});

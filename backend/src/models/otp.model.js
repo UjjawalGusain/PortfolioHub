@@ -13,6 +13,11 @@ const otpVerificationSchema = new Schema({
         type: String,
         required: true,
     },
+    isRegistered: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
     createdAt: {
         type: Date,
         default: Date.now,

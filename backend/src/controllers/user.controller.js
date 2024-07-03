@@ -17,7 +17,7 @@ const registerUser = asyncHandler(async (req, res) => {
         if ([username, fullname, email, password, githubId].some((field) => field?.trim() === "")) {
             throw new ApiError(400, "All fields are required");
         }
-
+ 
         if (!isValidEmail(email)) {
             throw new ApiError(400, "Email not acceptable");
         }
@@ -49,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
             coverImgUrl = coverImg?.url || "";
         }
 
-        const newUser = await User.create({
+        const userData = {
             fullname,
             profilePic: profilePicUrl,
             coverImg: coverImgUrl,
@@ -57,15 +57,15 @@ const registerUser = asyncHandler(async (req, res) => {
             email,
             githubId,
             password
-        });
+        }
 
-        newUser.verified = false;
-        await newUser.save();
+        req.userData = userData
 
         // Send OTP email 
         await sendOtpVerificationEmail(req, res);
 
-        return res.status(201).json(new ApiResponse(201, {}, "User registered successfully"));
+
+        return res.status(201).json(new ApiResponse(201, req.userData, "User registered successfully"));
     } catch (error) {
         console.error('Error during registration:', error);
         if (error instanceof ApiError) {
@@ -78,7 +78,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const verifyOtp = asyncHandler(async (req, res) => {
     try {
-        const { userOtp, email } = req.body;
+        const userOtp = req.body?.otp;
+        const email = req.body?.userData?.email
+
+        if (!userOtp || !email) {
+            throw new ApiError(400, "OTP and user email are required");
+        }
 
         const otpVer = await OtpVerification.findOne({ email });
         if (!otpVer) {
@@ -90,20 +95,17 @@ const verifyOtp = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Wrong OTP");
         }
 
-        const user = await User.findOneAndUpdate({ email }, { verified: true }, { new: true });
-        if (!user) {
-            throw new ApiError(404, "User not found");
-        }
-
         await OtpVerification.findByIdAndDelete(otpVer._id);
 
-        return res.status(200).json(new ApiResponse(200, user, "OTP verified"));
+        const newUser = await User.create(req.body.userData)
+
+        return res.status(200).json(new ApiResponse(200, newUser, "OTP verified"));
     } catch (error) {
         console.error('Error verifying OTP:', error);
         if (error instanceof ApiError) {
             throw error; 
         } else {
-            throw new ApiError(500, 'Registration failed. Please try again.');
+            throw new ApiError(500, 'Verification failed. Please try again.');
         }
     }
 });

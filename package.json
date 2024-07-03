@@ -5,11 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev" : "nodemon server.js"
+    "start": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm run dev",
+    "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "concurrently": "^8.2.2"
   }
 }
