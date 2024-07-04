@@ -29,4 +29,4 @@ userRouter.route("/logout").post(verifyTokens, logoutUser)
 userRouter.route("/refresh-token").post(refreshAccessToken)
 userRouter.route("/verify-otp").post(otpAuth, limiter, verifyOtp)
 
-export default userRouter
+export default userRouter 

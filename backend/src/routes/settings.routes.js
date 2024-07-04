@@ -2,6 +2,7 @@ import { Router } from "express";
 import { changePassword, changeUserSettings } from "../controllers/settings.controller.js";
 import { verifyTokens } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+
 const settingsRouter = Router()
 
 
