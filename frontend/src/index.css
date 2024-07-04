@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --homegold: #89CB4F;
+    --homeblack: #111216;
+}
