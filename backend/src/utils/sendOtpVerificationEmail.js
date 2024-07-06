@@ -27,7 +27,7 @@ export const sendOtpVerificationEmail = asyncHandler(async (req, _) => {
             subject: 'OTP For Project Manager',         
             html: `<p>Your OTP (One Time Password) for verification is <strong>${otp}</strong></p>`
         };
-
+        
         const saltRounds = 10;
         const hashedOtp = await bcrypt.hash(otp, saltRounds);
         const newOtpVerification = new OtpVerification({
@@ -40,7 +40,7 @@ export const sendOtpVerificationEmail = asyncHandler(async (req, _) => {
         await newOtpVerification.save({validateBeforeSave: false});
         // console.log('OTP verification record saved:', newOtpVerification);
         await transporter.sendMail(mailOptions);
-        // console.log('OTP email sent');
+        console.log('OTP email sent');
     } catch (error) {
         console.error('Error saving OTP verification record:', error);
         if (error instanceof ApiError) {

@@ -4,8 +4,6 @@ import {
   RouterProvider,
   createBrowserRouter,
   Navigate,
-  createRoutesFromElements,
-  Route,
 } from "react-router-dom";
 import "./index.css";
 import Layout from "./Layout";
@@ -16,6 +14,8 @@ import Projects from "./components/Projects/Projects";
 import More from "./components/More/More";
 import Signup from "./components/Signup/Signup";
 import VerifyOtp from "./components/VerifyOtp/VerifyOtp";
+import { Provider } from "react-redux";
+import store from "./redux/store.js";
 
 const router = createBrowserRouter([
   {
@@ -31,20 +31,18 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "/signup", // Main signup route
+    path: "/signup",
     element: <Signup/>,
   },
   {
-    path: "/signup/verify-otp", // Verify OTP route
+    path: "/signup/verify-otp", 
     element: <VerifyOtp/>,
   }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <Provider store={store}>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </Provider>
 );
 
-
-{/* <Route path="signup" element={<Signup />} /> */}
