@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux"
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { signup } from "../../redux/auth/authThunks.js";
 
 function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const dispatch = useDispatch();
-  const error = useSelector((state) => state.error)
+  const navigate = useNavigate();
+  const { error, isAuthenticated } = useSelector((state) => {
+    console.log("Auth: ", state.auth)
+    return (state.auth || {})
+  });
 
   const onSubmit = (data) => {
-    console.log(data);
     dispatch(signup(data));
   };
+
+  useEffect(() => {
+    // console.log("Auth: ", isAuthenticated)
+    // console.log('Err: ', error)
+    if (isAuthenticated) {
+      navigate("/signup/verify-otp");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
