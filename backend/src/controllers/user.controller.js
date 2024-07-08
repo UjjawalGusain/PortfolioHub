@@ -61,7 +61,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
         req.userData = userData
 
-        // Send OTP email 
+        // Send OTP email  
         await sendOtpVerificationEmail(req, res);
 
 
@@ -80,7 +80,6 @@ const verifyOtp = asyncHandler(async (req, res) => {
     try {
         const userOtp = req.body?.otp;
         const email = req.body?.userData?.email
-
         if (!userOtp || !email) {
             throw new ApiError(400, "OTP and user email are required");
         }

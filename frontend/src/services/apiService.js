@@ -8,16 +8,5 @@ const USER_ENDPOINTS = {
   REFRESH_TOKEN: `${API_BASE_URL}/users/refresh-token`,
   VERIFY_OTP: `${API_BASE_URL}/users/verify-otp`,
 };
+
 export { USER_ENDPOINTS };
-import axios from "axios"
-// signupAsync
-export const signupAsync = async (formData) => {
-  try {
-    const response = await axios.post(USER_ENDPOINTS.REGISTER, formData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Signup failed");
-  }
-};
-
-
