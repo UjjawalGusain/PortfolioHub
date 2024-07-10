@@ -16,6 +16,7 @@ import Signup from "./components/Signup/Signup";
 import VerifyOtp from "./components/VerifyOtp/VerifyOtp";
 import { Provider } from "react-redux";
 import store from "./redux/store.js";
+import Login from "./components/Login/Login.jsx";
 
 const router = createBrowserRouter([
   {
@@ -37,9 +38,13 @@ const router = createBrowserRouter([
   {
     path: "/signup/verify-otp", 
     element: <VerifyOtp/>,
-  }
+  },
+  {
+    path: "/login", 
+    element: <Login/>,
+  },
 ]);
-
+ 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <RouterProvider router={router} />

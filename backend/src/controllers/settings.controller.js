@@ -72,6 +72,8 @@ const changeUserSettings = asyncHandler(async (req, res) => {
         if (profilePicUrl) userDoc.profilePic = profilePicUrl;
         if (coverImgUrl) userDoc.coverImg = coverImgUrl;
         if (fullname) userDoc.fullname = fullname;
+        if (position) userDoc.position = position;
+        if (description) userDoc.description = description;
 
         await userDoc.save();
         return res.status(200).json(new ApiResponse(200, {}, "User settings changed successfully"));

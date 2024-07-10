@@ -63,6 +63,46 @@ const userSchema = new Schema({
     refreshToken: {
         type: String
     },
+    description: {
+        type: String
+    },
+    position: {
+        type: String,
+        enum: [
+            "Full Stack Developer",
+            "Frontend Developer",
+            "Backend Developer",
+            "Data Analyst",
+            "Data Scientist",
+            "DevOps Engineer",
+            "Product Manager",
+            "UI/UX Designer",
+            "AI Engineer",
+            "ML Engineer",
+            "Software Engineer",
+            "QA Engineer",
+            "Security Specialist",
+            "Mobile Developer",
+            "Cloud Engineer",
+            "Systems Architect",
+            "Database Administrator",
+            "Network Engineer",
+            "IT Support Specialist",
+            "Business Analyst",
+            "Scrum Master",
+            "Technical Writer",
+            "Solutions Architect",
+            "Hardware Engineer",
+            "Site Reliability Engineer",
+            "Cybersecurity Analyst",
+            "IT Manager",
+            "Project Coordinator",
+            "Systems Analyst",
+            "Technical Support Engineer"
+        ],
+        required: true,
+        trim: true,
+    },
 }, {
     timestamps: true,
 })

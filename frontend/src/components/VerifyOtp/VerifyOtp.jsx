@@ -37,7 +37,7 @@ function VerifyOtp() {
           dispatch(clearPassword());
           console.log("New User Data: ");
           console.log(userData);
-          // navigate("/next-step");
+          navigate("/login");
         } else {
           console.log("OTP verification failed:", response.data.error);
           setError("otp", {

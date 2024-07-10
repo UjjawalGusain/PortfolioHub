@@ -2,7 +2,10 @@ import React from 'react'
 
 function About() {
   return (
-    <div>About</div>
+    <div className='h-screen bg-home-black'>
+      About
+
+    </div>
   )
 }
 

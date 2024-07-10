@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp } from "../controllers/user.controller.js"
+import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp, fetchUserData } from "../controllers/user.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyTokens } from "../middlewares/auth.middleware.js"
 import { limiter } from "../middlewares/rateLimiter.middleware.js"
@@ -13,7 +13,7 @@ userRouter.route("/register").post(
             name: "profilePic",
             maxCount: 1,
         },
-        { 
+        {  
             name: "coverImg",
             maxCount: 1,
         },
@@ -28,5 +28,6 @@ userRouter.route("/login").post(loginUser)
 userRouter.route("/logout").post(verifyTokens, logoutUser)
 userRouter.route("/refresh-token").post(refreshAccessToken)
 userRouter.route("/verify-otp").post(otpAuth, limiter, verifyOtp)
+userRouter.route("/fetch-user-data").post(verifyTokens, fetchUserData)
 
 export default userRouter 
