@@ -347,53 +347,79 @@ const addProject = asyncHandler(async (req, res) => {
       domain,
       techStack,
       stars,
-      ownersUsernames,
+      ownerUsernames,
     } = projectData;
 
 
+    // Validate required fields
+    if (!name || !repoId || !url || !description || !domain || !techStack || !ownerUsernames) {
+      throw new ApiError(400, "Missing required project data");
+    }
+    
+    // Find owners by usernames
     const owners = await Promise.all(
-      ownersUsernames.map(async (ownerUsername) => {
+      ownerUsernames.map(async (ownerUsername) => {
         const user = await User.findOne({ username: ownerUsername });
-        if(!user) {
-          throw new ApiError(404, `Owner with username ${ownerUsername} not found`)
+        if (!user) {
+          throw new ApiError(404, `Owner with username ${ownerUsername} not found`);
         }
-        return user
+        return user;
       })
     );
+
 
 
     let videosUrl = [];
     let imagesUrl = [];
     let thumbnailUrl = "";
 
+    // Handle video uploads
     if (req.files && req.files.videos) {
       const videos = req.files.videos;
       videosUrl = await Promise.all(
         videos.map(async (video) => {
           let videoUrl = video.path;
-          let videoNew = await uploadFileToCloudinary(videoUrl);
+          let videoNew;
+          try {
+            videoNew = await uploadFileToCloudinary(videoUrl);
+          } catch (uploadError) {
+            throw new ApiError(500, `Error uploading video: ${uploadError.message}`);
+          }
           let videoPath = videoNew?.url || "";
           return videoPath;
         })
       );
     }
 
+
+    // Handle image uploads
     if (req.files && req.files.images) {
       const images = req.files.images;
       imagesUrl = await Promise.all(
         images.map(async (image) => {
           let imageUrl = image.path;
-          let imageNew = await uploadFileToCloudinary(imageUrl);
+          let imageNew;
+          try {
+            imageNew = await uploadFileToCloudinary(imageUrl);
+          } catch (uploadError) {
+            throw new ApiError(500, `Error uploading image: ${uploadError.message}`);
+          }
           let imagePath = imageNew?.url || "";
           return imagePath;
         })
       );
     }
 
+    // Handle thumbnail upload
     if (req.files && req.files.thumbnail) {
       const thumbnail = req.files.thumbnail;
       const thumbnailPath = thumbnail[0].path;
-      const thumbnailNew = await uploadFileToCloudinary(thumbnailPath);
+      let thumbnailNew;
+      try {
+        thumbnailNew = await uploadFileToCloudinary(thumbnailPath);
+      } catch (uploadError) {
+        throw new ApiError(500, `Error uploading thumbnail: ${uploadError.message}`);
+      }
       thumbnailUrl = thumbnailNew?.url || "";
     }
 
@@ -406,9 +432,9 @@ const addProject = asyncHandler(async (req, res) => {
       techStack,
       stars,
       owners,
-      videosUrl,
-      imagesUrl,
-      thumbnailUrl,
+      videos: videosUrl,
+      images: imagesUrl,
+      thumbnail: thumbnailUrl,
     };
 
     const newProject = await Project.create(project);
@@ -417,15 +443,16 @@ const addProject = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, newProject, "New project Added successfully"));
+      .json(new ApiResponse(200, newProject, "New project added successfully"));
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     } else {
-      throw new ApiError(500, "Internal Serval Error while adding project");
+      throw new ApiError(500, "Internal Server Error while adding project");
     }
   }
 });
+
 
 export {
   registerUser,
