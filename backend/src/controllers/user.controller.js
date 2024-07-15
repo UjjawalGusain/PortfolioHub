@@ -351,8 +351,6 @@ const addProject = asyncHandler(async (req, res) => {
     const ownerUsernames = ownersUsernames.split(',').map(username => username.trim());
     const techStacks = techStack.split(',').map(tech => tech.trim());
 
-
- 
     // Validate required fields
     if (!name || !repoId || !url || !description || !domain || !techStacks || !ownerUsernames) {
       throw new ApiError(400, "Missing required project data");
