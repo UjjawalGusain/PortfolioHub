@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp, fetchUserData } from "../controllers/user.controller.js"
+import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp, fetchUserData, addProject } from "../controllers/user.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyTokens } from "../middlewares/auth.middleware.js"
 import { limiter } from "../middlewares/rateLimiter.middleware.js"
@@ -29,5 +29,16 @@ userRouter.route("/logout").post(verifyTokens, logoutUser)
 userRouter.route("/refresh-token").post(refreshAccessToken)
 userRouter.route("/verify-otp").post(otpAuth, limiter, verifyOtp)
 userRouter.route("/fetch-user-data").post(verifyTokens, fetchUserData)
+
+userRouter.route("/add-project").post(
+    verifyTokens,
+    upload.fields([
+        { name: "videos", maxCount: 3 }, 
+        { name: "images", maxCount: 8 },
+        { name: "thumbnail", maxCount: 1 }
+    ]),
+    addProject
+);
+
 
 export default userRouter 

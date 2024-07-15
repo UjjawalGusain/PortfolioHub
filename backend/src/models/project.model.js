@@ -10,16 +10,17 @@ const projectSchema = new Schema({
         type: String, // Github API
         required: true,
     },
+    thumbnail: {
+        type: String,
+    },
     images: [
         {
-            type: mongoose.Schema.ObjectId,
-            ref: "Image"
+            type: String,
         }
     ],
     videos: [
         {
-            type: mongoose.Schema.ObjectId,
-            ref: "Video"
+            type: String,
         }
     ],
     url: {
@@ -41,7 +42,7 @@ const projectSchema = new Schema({
     stars: {
         type: Number,
         default: 0,
-    },
+    }, 
     owners: [
         {
             type: mongoose.Schema.ObjectId,

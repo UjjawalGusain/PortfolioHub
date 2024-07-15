@@ -8,6 +8,7 @@ const USER_ENDPOINTS = {
   REFRESH_TOKEN: `${API_BASE_URL}/users/refresh-token`,
   VERIFY_OTP: `${API_BASE_URL}/users/verify-otp`,
   FETCH_USER_DATA: `${API_BASE_URL}/users/fetch-user-data`,
+  ADD_PROJECT: `${API_BASE_URL}/users/add-project`,
 };
 
 export { USER_ENDPOINTS };

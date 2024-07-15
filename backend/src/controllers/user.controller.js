@@ -9,15 +9,30 @@ import bcrypt from "bcrypt";
 import { OtpVerification } from "../models/otp.model.js";
 import { sendOtpVerificationEmail } from "../utils/sendOtpVerificationEmail.js";
 import { generateAccessTokenAndRefreshToken } from "../utils/generateAccessTokenAndRefreshToken.js";
+import { Project } from "../models/project.model.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
-    const { username, fullname, email, password, githubId, position, description } = req.body;
+    const {
+      username,
+      fullname,
+      email,
+      password,
+      githubId,
+      position,
+      description,
+    } = req.body;
 
     if (
-      [username, fullname, email, password, githubId, position, description].some(
-        (field) => field?.trim() === ""
-      )
+      [
+        username,
+        fullname,
+        email,
+        password,
+        githubId,
+        position,
+        description,
+      ].some((field) => field?.trim() === "")
     ) {
       throw new ApiError(400, "All fields are required");
     }
@@ -62,7 +77,7 @@ const registerUser = asyncHandler(async (req, res) => {
       githubId,
       password,
       position,
-      description
+      description,
     };
 
     req.userData = userData;
@@ -286,7 +301,16 @@ const fetchUserData = asyncHandler(async (req, res) => {
 
     // console.log("User: ");
     // console.log(user);
-    const { fullname, profilePic, coverImg, username, email, githubId, position, description } = user;
+    const {
+      fullname,
+      profilePic,
+      coverImg,
+      username,
+      email,
+      githubId,
+      position,
+      description,
+    } = user;
     const userValues = {
       fullname,
       profilePic,
@@ -297,9 +321,109 @@ const fetchUserData = asyncHandler(async (req, res) => {
       position,
       description,
     };
-    return res.json(new ApiResponse(200, userValues, "User Data Successfully fetched"))
+    return res.json(
+      new ApiResponse(200, userValues, "User Data Successfully fetched")
+    );
   } catch (error) {
     throw new ApiError(401, "Error Fetching Data");
+  }
+});
+
+const addProject = asyncHandler(async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const projectData = req.body;
+
+    const {
+      name,
+      repoId,
+      url,
+      description,
+      domain,
+      techStack,
+      stars,
+      ownersUsernames,
+    } = projectData;
+
+
+    const owners = await Promise.all(
+      ownersUsernames.map(async (ownerUsername) => {
+        const user = await User.findOne({ username: ownerUsername });
+        if(!user) {
+          throw new ApiError(404, `Owner with username ${ownerUsername} not found`)
+        }
+        return user
+      })
+    );
+
+
+    let videosUrl = [];
+    let imagesUrl = [];
+    let thumbnailUrl = "";
+
+    if (req.files && req.files.videos) {
+      const videos = req.files.videos;
+      videosUrl = await Promise.all(
+        videos.map(async (video) => {
+          let videoUrl = video.path;
+          let videoNew = await uploadFileToCloudinary(videoUrl);
+          let videoPath = videoNew?.url || "";
+          return videoPath;
+        })
+      );
+    }
+
+    if (req.files && req.files.images) {
+      const images = req.files.images;
+      imagesUrl = await Promise.all(
+        images.map(async (image) => {
+          let imageUrl = image.path;
+          let imageNew = await uploadFileToCloudinary(imageUrl);
+          let imagePath = imageNew?.url || "";
+          return imagePath;
+        })
+      );
+    }
+
+    if (req.files && req.files.thumbnail) {
+      const thumbnail = req.files.thumbnail;
+      const thumbnailPath = thumbnail[0].path;
+      const thumbnailNew = await uploadFileToCloudinary(thumbnailPath);
+      thumbnailUrl = thumbnailNew?.url || "";
+    }
+
+    const project = {
+      name,
+      repoId,
+      url,
+      description,
+      domain,
+      techStack,
+      stars,
+      owners,
+      videosUrl,
+      imagesUrl,
+      thumbnailUrl,
+    };
+
+    const newProject = await Project.create(project);
+    user.projects.push(newProject._id);
+    await user.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, newProject, "New project Added successfully"));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(500, "Internal Serval Error while adding project");
+    }
   }
 });
 
@@ -310,4 +434,5 @@ export {
   refreshAccessToken,
   verifyOtp,
   fetchUserData,
+  addProject,
 };
