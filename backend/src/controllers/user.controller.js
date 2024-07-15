@@ -332,13 +332,11 @@ const fetchUserData = asyncHandler(async (req, res) => {
 const addProject = asyncHandler(async (req, res) => {
   try {
     const user = req.user;
-
     if (!user) {
       throw new ApiError(404, "User not found");
     }
 
     const projectData = req.body;
-
     const {
       name,
       repoId,
@@ -347,15 +345,19 @@ const addProject = asyncHandler(async (req, res) => {
       domain,
       techStack,
       stars,
-      ownerUsernames,
+      ownersUsernames,
     } = projectData;
 
+    const ownerUsernames = ownersUsernames.split(',').map(username => username.trim());
+    const techStacks = techStack.split(',').map(tech => tech.trim());
 
+
+ 
     // Validate required fields
-    if (!name || !repoId || !url || !description || !domain || !techStack || !ownerUsernames) {
+    if (!name || !repoId || !url || !description || !domain || !techStacks || !ownerUsernames) {
       throw new ApiError(400, "Missing required project data");
     }
-    
+
     // Find owners by usernames
     const owners = await Promise.all(
       ownerUsernames.map(async (ownerUsername) => {
@@ -429,7 +431,7 @@ const addProject = asyncHandler(async (req, res) => {
       url,
       description,
       domain,
-      techStack,
+      techStacks,
       stars,
       owners,
       videos: videosUrl,

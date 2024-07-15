@@ -9,7 +9,9 @@ function NoProjectCard() {
           <h1 className="text-center text-3xl text-white font-bold cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105">
             No Project? Add a New Project Right Now
           </h1>
-          <button className="flex items-center justify-center bg-home-gold p-3 rounded-full transition-transform duration-300 ease-in-out transform hover:scale-110 active:scale-95 shadow-md hover:shadow-lg">
+          <button 
+            className="flex items-center justify-center bg-home-gold p-3 rounded-full transition-transform duration-300 ease-in-out transform hover:scale-110 active:scale-95 shadow-md hover:shadow-lg"
+          >
             <CiSquarePlus className="text-white text-6xl" />
           </button>
         </div>
