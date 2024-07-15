@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CardDefault() {
+export default function CardDefault({thumbnailUrl, githubUrl, description}) {
   return (
       <div
       className="flex flex-col rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 md:max-w-xl md:flex-row">
@@ -23,4 +23,4 @@ export default function CardDefault() {
       </div>
     </div>
   );
-}
+} 
