@@ -453,6 +453,60 @@ const addProject = asyncHandler(async (req, res) => {
   }
 });
 
+const fetchUserProjects = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized Access");
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decodedToken?._id);
+
+    if (!user) {
+      throw new ApiError(401, "Invalid Refresh Token");
+    }
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "Refresh token expired or used");
+    }
+
+    // console.log("User: ");
+    // console.log(user);
+    // console.log("Hello");
+
+    const {
+      projects
+    } = user;
+    const projectObjects = await Promise.all(
+      projects.map(async (project) => {
+        const projectObject = await Project.findById(project);
+        return projectObject;
+      })
+    );
+
+    const userProjects = {
+      projectObjects
+    };
+    // console.log(userProjects);
+    return res.json(
+      new ApiResponse(200, userProjects, "User Projects Successfully fetched")
+    );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(401, "Error Fetching User Projects");
+    }
+    
+  }
+});
+
 
 export {
   registerUser,
@@ -462,4 +516,5 @@ export {
   verifyOtp,
   fetchUserData,
   addProject,
+  fetchUserProjects
 };

@@ -24,7 +24,7 @@ const authSlice = createSlice({
       state.auth.user = action.payload;
       state.auth.error = null;
     },
-    signupFailure: (state, action) => {
+    signupFailure: (state, action) => { 
       state.auth.loading = false;
       state.auth.isAuthenticated = false;
       state.auth.user = null;

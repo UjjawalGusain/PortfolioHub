@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp, fetchUserData, addProject } from "../controllers/user.controller.js"
+import { loginUser, logoutUser, refreshAccessToken, registerUser, verifyOtp, fetchUserData, addProject, fetchUserProjects } from "../controllers/user.controller.js"
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyTokens } from "../middlewares/auth.middleware.js"
 import { limiter } from "../middlewares/rateLimiter.middleware.js"
@@ -39,6 +39,8 @@ userRouter.route("/add-project").post(
     ]),
     addProject
 );
+
+userRouter.route("/projects").post(verifyTokens, fetchUserProjects)
 
 
 export default userRouter 

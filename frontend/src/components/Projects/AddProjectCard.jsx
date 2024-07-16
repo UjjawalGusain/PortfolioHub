@@ -5,9 +5,14 @@ import { USER_ENDPOINTS } from '../../services/apiService';
 import MainDetails from './AddProjectDetails/MainDetails';
 import OptionalDetails from './AddProjectDetails/OptionalDetails';
 import FilesDetails from './AddProjectDetails/FilesDetails';
+import { IoArrowBackCircleSharp } from "react-icons/io5";
 
-function AddProjectCard() {
+function AddProjectCard({setShowAddProject}) {
   const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const clickBackButton = () => {
+    setShowAddProject(false)
+  }
 
   const onSubmit = async (data) => {
     const formData = new FormData();
@@ -48,7 +53,13 @@ function AddProjectCard() {
 
   return (
     <div className="flex w-full h-full justify-center items-center">
-      <div className="flex flex-col w-1/2 h-full border border-home-gold rounded-2xl items-center justify-center bg-gray-800 bg-opacity-75 shadow-lg transition-transform duration-300 ease-in-out hover:shadow-2xl transform hover:scale-105 p-6">
+
+      <div className="flex flex-col w-1/2 h-5/6 m-10 border border-home-gold rounded-2xl items-center justify-center bg-gray-800 bg-opacity-75 shadow-lg transition-transform duration-300 ease-in-out hover:shadow-2xl transform hover:scale-105 p-6">
+      <button className='w-10 h-10 rounded-full border-2 absolute top-2 left-2'
+        onClick={clickBackButton}
+      >
+      <IoArrowBackCircleSharp className='w-full h-full text-home-gold'/>
+      </button>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col  w-full">
           {/* Carousel-like navigation */}
           <MainDetails register={register} errors={errors} />
