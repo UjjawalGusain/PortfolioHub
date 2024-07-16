@@ -38,12 +38,13 @@ const CardDefault = ({ project }) => {
         <p className="text-xs text-neutral-500 dark:text-neutral-300">
           Last updated {timeAgo}
         </p>
+        <a href={url} target="_blank" rel="noopener noreferrer">
         <button 
           className='m-10 w-36 h-10 border-2 border-black text-sm' 
-          onClick={handleButton}
         >
           Let's see the project!
         </button>
+        </a>
       </div>
     </div>
   );
