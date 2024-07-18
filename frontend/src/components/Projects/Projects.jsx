@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUserProjects } from "../../redux/project/projectsSlice";
 import AddProjectCard from "./AddProjectCard";
 import PaginatedCards from "./ProjectCards/PaginatedCards";
-import { FaPlus } from "react-icons/fa";
 
 export default function Projects() {
   const dispatch = useDispatch();

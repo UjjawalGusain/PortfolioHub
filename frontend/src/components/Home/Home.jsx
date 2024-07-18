@@ -1,54 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchUserData } from "../../redux/auth/authSlice";
-import { FaDownload } from "react-icons/fa";
+import axios from "axios";
+import { PROFILE_ENDPOINTS } from "../../services/apiService";
+import { useParams } from "react-router-dom";
 import { fetchGithubData } from "../../api/githubApi";
+import { FaDownload } from "react-icons/fa";
 
 function Home() {
-  const dispatch = useDispatch();
-  const userAuth = useSelector((state) => state.auth.auth.user?.data || "");
-
+  const { username } = useParams();
+  const [userData, setUserData] = useState(null);
   const [githubData, setGithubData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userLoading, setUserLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [githubLoading, setGithubLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (userAuth.githubId) {
-          const data = await fetchGithubData(userAuth.githubId);
-          setGithubData(data);
-        }
+        const response = await axios.get(PROFILE_ENDPOINTS.FETCH_USER_PROFILE.replace(':username', username));
+        setUserData(response.data.data);
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching GitHub data:", error);
+      } catch (err) {
+        setError(err.message);
         setLoading(false);
       }
     };
-
-    if (!userLoading) {
-      fetchData();
-    }
-  }, [userAuth.githubId, userLoading]);
+    fetchData();
+  }, [username]);
 
   useEffect(() => {
-    const loadUserData = async () => {
-      await dispatch(fetchUserData());
-      setUserLoading(false);
+    const fetchGithub = async () => {
+      try {
+        if (userData && userData.githubId) {
+          const data = await fetchGithubData(userData.githubId);
+          setGithubData(data);
+        }
+        setGithubLoading(false);
+      } catch (error) {
+        console.error("Error fetching GitHub data:", error);
+        setGithubLoading(false);
+      }
     };
 
-    loadUserData();
-  }, [dispatch]);
+    if (userData) {
+      fetchGithub();
+    }
+  }, [userData]);
 
   const handleDownloadClick = () => {
-    console.log(githubData);
-    console.log("button");
+    // Implement the download functionality here
   };
 
-  if (userLoading || loading) {
+  if (loading || githubLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-white text-2xl">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen bg-home-black text-white">
+        Error: {error}
       </div>
     );
   }
@@ -61,10 +74,10 @@ function Home() {
             <div className="text-white p-10">
               <p className="text-3xl mb-5">Hello!</p>
               <p className="text-7xl mb-3">
-                I'm <span className="text-home-gold">{userAuth.fullname}</span>
+                I'm <span className="text-home-gold">{userData.fullname}</span>
               </p>
-              <p className="text-4xl mb-4">{userAuth.position}</p>
-              <p className="text-lg">{userAuth.description}</p>
+              <p className="text-4xl mb-4">{userData.position}</p>
+              <p className="text-lg">{userData.description}</p>
             </div>
             <div className="mx-10 my-5">
               <button
@@ -78,10 +91,10 @@ function Home() {
           <div className="flex justify-center items-center w-1/3">
             <div className="relative w-72 h-72">
               <div className="absolute top-0 left-0 w-full h-full rounded-full border-8 border-home-gold"></div>
-              {userAuth.profilePic && (
+              {userData.profilePic && (
                 <>
                   <img
-                    src={userAuth.profilePic}
+                    src={userData.profilePic}
                     alt="profileImg"
                     className="rounded-full w-full h-full object-cover z-10"
                   />
@@ -94,14 +107,14 @@ function Home() {
       </div>
       <div className="flex justify-start p-10 pt-5 text-center">
         <div className="m-5 mr-10">
-          {githubData && githubData.followers && (
+          {githubData && (
             <div>
               <div className="text-home-gold text-4xl font-bold">{`${githubData.followers}+`}</div>
               <div className="text-white text-sm">Followers on Github</div>
             </div>
           )}
         </div>
-        {githubData && githubData.following && (
+        {githubData && (
           <div className="m-5 mr-10">
             <div className="text-home-gold text-4xl font-bold">{`${githubData.following}+`}</div>
             <div className="text-white text-sm">Following on Github</div>
@@ -109,7 +122,7 @@ function Home() {
         )}
         <div className="mx-5 mt-12">
           <a
-            href={`https://github.com/${userAuth.githubId}`}
+            href={`https://github.com/${userData.githubId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-black bg-home-gold py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-opacity-80 transition duration-300 ease-in-out"

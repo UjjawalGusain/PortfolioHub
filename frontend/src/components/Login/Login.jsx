@@ -20,7 +20,7 @@ function Login() {
         withCredentials: true
       });
       console.log("Login Response:", res);
-      navigate('/home')
+      navigate(`/user/${res.data.data.user.username}`)
     } catch (error) {
       console.error("Error during login:", error);
     }

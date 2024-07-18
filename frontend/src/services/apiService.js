@@ -1,15 +1,17 @@
-import { API_BASE_URL } from "../config/apiConfig.js";
-
 // USER ENDPOINTS
 const USER_ENDPOINTS = {
-  REGISTER: `${API_BASE_URL}/users/register`,
-  LOGIN: `${API_BASE_URL}/users/login`,
-  LOGOUT: `${API_BASE_URL}/users/logout`,
-  REFRESH_TOKEN: `${API_BASE_URL}/users/refresh-token`,
-  VERIFY_OTP: `${API_BASE_URL}/users/verify-otp`,
-  FETCH_USER_DATA: `${API_BASE_URL}/users/fetch-user-data`,
-  ADD_PROJECT: `${API_BASE_URL}/users/add-project`,
-  FETCH_USER_PROJECTS: `${API_BASE_URL}/users/projects`,
+  REGISTER: `/api/v1/users/register`,
+  LOGIN: `/api/v1/users/login`,
+  LOGOUT: `/api/v1/users/logout`,
+  REFRESH_TOKEN: `/api/v1/users/refresh-token`,
+  VERIFY_OTP: `/api/v1/users/verify-otp`,
+  FETCH_USER_DATA: `/api/v1/users/fetch-user-data`,
+  ADD_PROJECT: `/api/v1/users/add-project`,
+  FETCH_USER_PROJECTS: `/api/v1/users/projects`,
 };
 
-export { USER_ENDPOINTS };
+const PROFILE_ENDPOINTS = {
+  FETCH_USER_PROFILE: `/api/v1/profiles/:username`
+}
+
+export { USER_ENDPOINTS, PROFILE_ENDPOINTS };

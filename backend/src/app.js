@@ -17,8 +17,9 @@ app.use(cookieParser())
 
 import userRouter from "./routes/user.routes.js"
 import settingsRouter from "./routes/settings.routes.js"
-
+import profileRouter from "./routes/profiles.routes.js"
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/settings", settingsRouter)
+app.use("/api/v1/profiles", profileRouter)
 
 export {app}
