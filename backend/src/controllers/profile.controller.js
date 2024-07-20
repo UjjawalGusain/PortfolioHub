@@ -24,7 +24,6 @@ const fetchProfileData = asyncHandler(async (req, res) => {
         } else {
             throw new ApiError(404, `internal error`);
         }
-
     }
 
 })

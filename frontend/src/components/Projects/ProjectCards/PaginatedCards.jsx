@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import ProjectCards from "./ProjectCards";
 
@@ -6,11 +6,10 @@ function PaginatedCards({ projectsPerPage, projects }) {
   const [projectOffset, setProjectOffset] = useState(0);
 
   if (!projects) {
-    return null; // or a fallback UI, like a loading spinner
+    return null; 
   }
 
   const endOffset = projectOffset + projectsPerPage;
-  console.log(`Loading items from ${projectOffset} to ${endOffset}`);
   const currentProjects = projects.slice(projectOffset, endOffset);
   const pageCount = Math.ceil(projects.length / projectsPerPage);
 

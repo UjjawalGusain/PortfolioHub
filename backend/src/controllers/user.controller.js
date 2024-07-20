@@ -348,11 +348,21 @@ const addProject = asyncHandler(async (req, res) => {
       ownersUsernames,
     } = projectData;
 
-    const ownerUsernames = ownersUsernames.split(',').map(username => username.trim());
-    const techStacks = techStack.split(',').map(tech => tech.trim());
+    const ownerUsernames = ownersUsernames
+      .split(",")
+      .map((username) => username.trim());
+    const techStacks = techStack.split(",").map((tech) => tech.trim());
 
     // Validate required fields
-    if (!name || !repoId || !url || !description || !domain || !techStacks || !ownerUsernames) {
+    if (
+      !name ||
+      !repoId ||
+      !url ||
+      !description ||
+      !domain ||
+      !techStacks ||
+      !ownerUsernames
+    ) {
       throw new ApiError(400, "Missing required project data");
     }
 
@@ -361,13 +371,14 @@ const addProject = asyncHandler(async (req, res) => {
       ownerUsernames.map(async (ownerUsername) => {
         const user = await User.findOne({ username: ownerUsername });
         if (!user) {
-          throw new ApiError(404, `Owner with username ${ownerUsername} not found`);
+          throw new ApiError(
+            404,
+            `Owner with username ${ownerUsername} not found`
+          );
         }
         return user;
       })
     );
-
-
 
     let videosUrl = [];
     let imagesUrl = [];
@@ -383,14 +394,16 @@ const addProject = asyncHandler(async (req, res) => {
           try {
             videoNew = await uploadFileToCloudinary(videoUrl);
           } catch (uploadError) {
-            throw new ApiError(500, `Error uploading video: ${uploadError.message}`);
+            throw new ApiError(
+              500,
+              `Error uploading video: ${uploadError.message}`
+            );
           }
           let videoPath = videoNew?.url || "";
           return videoPath;
         })
       );
     }
-
 
     // Handle image uploads
     if (req.files && req.files.images) {
@@ -402,7 +415,10 @@ const addProject = asyncHandler(async (req, res) => {
           try {
             imageNew = await uploadFileToCloudinary(imageUrl);
           } catch (uploadError) {
-            throw new ApiError(500, `Error uploading image: ${uploadError.message}`);
+            throw new ApiError(
+              500,
+              `Error uploading image: ${uploadError.message}`
+            );
           }
           let imagePath = imageNew?.url || "";
           return imagePath;
@@ -418,7 +434,10 @@ const addProject = asyncHandler(async (req, res) => {
       try {
         thumbnailNew = await uploadFileToCloudinary(thumbnailPath);
       } catch (uploadError) {
-        throw new ApiError(500, `Error uploading thumbnail: ${uploadError.message}`);
+        throw new ApiError(
+          500,
+          `Error uploading thumbnail: ${uploadError.message}`
+        );
       }
       thumbnailUrl = thumbnailNew?.url || "";
     }
@@ -453,60 +472,167 @@ const addProject = asyncHandler(async (req, res) => {
   }
 });
 
+// const fetchUserProjects = asyncHandler(async (req, res) => {
+//   const incomingRefreshToken =
+//     req.cookies.refreshToken || req.body.refreshToken;
+
+//   if (!incomingRefreshToken) {
+//     throw new ApiError(401, "Unauthorized Access");
+//   }
+
+//   try {
+//     const decodedToken = jwt.verify(
+//       incomingRefreshToken,
+//       process.env.REFRESH_TOKEN_SECRET
+//     );
+
+//     const user = await User.findById(decodedToken?._id);
+
+//     if (!user) {
+//       throw new ApiError(401, "Invalid Refresh Token");
+//     }
+//     if (incomingRefreshToken !== user?.refreshToken) {
+//       throw new ApiError(401, "Refresh token expired or used");
+//     }
+
+//     // console.log("User: ");
+//     // console.log(user);
+//     // console.log("Hello");
+
+//     const {
+//       projects
+//     } = user;
+//     const projectObjects = await Promise.all(
+//       projects.map(async (project) => {
+//         const projectObject = await Project.findById(project);
+//         return projectObject;
+//       })
+//     );
+
+//     const userProjects = {
+//       projectObjects
+//     };
+//     // console.log(userProjects);
+//     return res.json(
+//       new ApiResponse(200, userProjects, "User Projects Successfully fetched")
+//     );
+//   } catch (error) {
+//     if (error instanceof ApiError) {
+//       throw error;
+//     } else {
+//       throw new ApiError(401, "Error Fetching User Projects");
+//     }
+
+//   }
+// });
+
 const fetchUserProjects = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
-
-  if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized Access");
-  }
-
   try {
-    const decodedToken = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
+    const { username } = req.params;
+
+    const user = await User.findOne({ username }).select(
+      "-password -refreshToken"
     );
 
-    const user = await User.findById(decodedToken?._id);
-
     if (!user) {
-      throw new ApiError(401, "Invalid Refresh Token");
-    }
-    if (incomingRefreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "Refresh token expired or used");
+      throw new ApiError(404, `Owner with username ${username} not found`);
     }
 
-    // console.log("User: ");
-    // console.log(user);
-    // console.log("Hello");
+    if (!user.projects || user.projects.length === 0) {
+      return res.json(
+        new ApiResponse(
+          200,
+          { projectObjects: [] },
+          "No projects found for this user"
+        )
+      );
+    }
 
-    const {
-      projects
-    } = user;
     const projectObjects = await Promise.all(
-      projects.map(async (project) => {
-        const projectObject = await Project.findById(project);
-        return projectObject;
+      user.projects.map(async (projectId) => {
+        try {
+          return await Project.findById(projectId);
+        } catch (error) {
+          console.error(`Project with ID ${projectId} not found`, error);
+          return null;
+        }
       })
     );
 
-    const userProjects = {
-      projectObjects
-    };
-    // console.log(userProjects);
+    const validProjects = projectObjects.filter((project) => project !== null);
+
+    // console.log("Valid Projects: ", validProjects);
+
     return res.json(
-      new ApiResponse(200, userProjects, "User Projects Successfully fetched")
+      new ApiResponse(
+        200,
+        { projectObjects: validProjects },
+        "User Projects Successfully fetched"
+      )
     );
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     } else {
-      throw new ApiError(401, "Error Fetching User Projects");
+      console.error("Error Fetching User Projects:", error);
+      throw new ApiError(500, "Error Fetching User Projects");
     }
-    
   }
 });
 
+const fetchProject = asyncHandler(async (req, res) => {
+  try {
+    const { username, projectName } = req.params;
+
+    const user = await User.findOne({ username }).select(
+      "-password -refreshToken"
+    );
+
+    if (!user) {
+      throw new ApiError(404, `Owner with username ${username} not found`);
+    }
+
+    // console.log(user);
+
+    const projectIds = user.projects;
+
+    const projects = await Project.find({ _id: { $in: projectIds } });
+    console.log("Project Name: ", username);
+    const project = projects.find((project) => project.name === projectName);
+    // console.log(project);
+    const ownerObjects = await Promise.all(
+      project.owners.map(async (ownerId) => {
+        try {
+          return await User.findById(ownerId).select('-refreshToken -password');
+        } catch (error) {
+          console.error(`Owner with ID ${ownerId} not found`, error);
+          return null;
+        }
+      })
+    );
+
+    const validOwnerObjects = ownerObjects.filter(owner => owner !== null);
+    const projectObject = {
+      ...project.toObject(), // Convert the Mongoose document to a plain object
+      owners: validOwnerObjects
+    };
+
+    // const validProjects = projectObjects.filter((project) => project !== null);
+    // console.log(projectObject);
+
+
+    return res.json(
+      new ApiResponse(200, projectObject, "Project successfully fetched")
+    );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      console.error("Error Fetching User Projects:", error);
+      throw new ApiError(500, "Error Fetching User Projects");
+    }
+  }
+});
 
 export {
   registerUser,
@@ -516,5 +642,6 @@ export {
   verifyOtp,
   fetchUserData,
   addProject,
-  fetchUserProjects
+  fetchUserProjects,
+  fetchProject,
 };

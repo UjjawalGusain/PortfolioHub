@@ -4,6 +4,7 @@ import { upload } from "../middlewares/multer.middleware.js"
 import { verifyTokens } from "../middlewares/auth.middleware.js"
 import { limiter } from "../middlewares/rateLimiter.middleware.js"
 import { otpAuth } from "../middlewares/otpAuth.middleware.js"
+import { fetchProject } from "../controllers/user.controller.js"
 
 const userRouter = Router()
 
@@ -40,7 +41,11 @@ userRouter.route("/add-project").post(
     addProject
 );
 
-userRouter.route("/projects").post(verifyTokens, fetchUserProjects)
+// profileRouter.route("/:username").get(
+//     fetchProfileData
+// )
 
+userRouter.get('/:username/projects', fetchUserProjects);
+userRouter.get('/:username/projects/:projectName', fetchProject);
 
 export default userRouter 

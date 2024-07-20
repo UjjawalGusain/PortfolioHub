@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import TimeAgo  from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+
 
 TimeAgo.addLocale(en);
-
+// navigate(`user/${pathUsername}/projects/${name}`)
 const CardDefault = ({ project }) => {
+  const {username} = useParams()
+  const pathUsername = username
   const { thumbnail, name, description, updatedAt, url } = project;
   const [timeAgo, setTimeAgo] = useState('');
+  const navigate = useNavigate()
+
+  const handleProjectClick = () => {
+    navigate(`${name}/`)
+  }
 
   useEffect(() => {
     const timeAgoInstance = new TimeAgo('en-US');
@@ -38,13 +47,15 @@ const CardDefault = ({ project }) => {
         <p className="text-xs text-neutral-500 dark:text-neutral-300">
           Last updated {timeAgo}
         </p>
-        <a href={url} target="_blank" rel="noopener noreferrer">
+        {/* <a href={url} target="_blank" rel="noopener noreferrer"> */}
         <button 
           className='m-10 w-36 h-10 border-2 border-black text-sm' 
+          onClick={handleProjectClick}
         >
           Let's see the project!
+          
         </button>
-        </a>
+        {/* </a> */}
       </div>
     </div>
   );
