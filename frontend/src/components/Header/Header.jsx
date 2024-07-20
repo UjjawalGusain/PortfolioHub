@@ -9,8 +9,8 @@ import { useParams } from "react-router-dom";
 function Header() {
   const navigate = useNavigate();
   const { username } = useParams();
-  const pathUsername = username
-  const [authUsername, setAuthUsername] = useState("")
+  const pathUsername = username;
+  const [authUsername, setAuthUsername] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,13 +52,13 @@ function Header() {
 
   const clickSearch = () => {
     console.log("Search Openend");
-  }
+  };
 
   // if (loading) {
   //   return <div>Loading...</div>;
   // }
 
-  const isUserProfile = authUsername === pathUsername
+  const isUserProfile = authUsername === pathUsername;
   // const isUserProfile = true
   return (
     <div className="h-20 flex bg-home-black sticky top-0">
@@ -97,32 +97,16 @@ function Header() {
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/more`}
+              to={`/user/${pathUsername}/achievements`}
               className={({ isActive }) => (isActive ? "text-home-gold" : "")}
             >
-              More
+              Achievements
             </NavLink>
           </li>
         </ul>
       </div>
       <div className="w-1/3 flex justify-center items-center">
-
-      {isUserProfile ? (
-          <>
-            <button className="w-1/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
-              onClick={clickSearch}
-            >
-              <p className="font-sans">Search</p>
-            </button>
-    
-            <button
-              className="w-1/5 h-3/5 transition duration-500 ease-in-out transform active:scale-95 text-home-gold hover:underline"
-              onClick={clickLogout}
-            >
-              <p className="font-sans">Logout</p>
-            </button>
-          </>
-        ) : (
+        {authUsername === "" ? (
           <>
             <button
               className="w-1/5 h-3/5 transition duration-500 ease-in-out transform active:scale-95 text-home-gold hover:underline"
@@ -138,9 +122,33 @@ function Header() {
               <p className="font-sans">Signup</p>
             </button>
           </>
-        )}
+        ) : isUserProfile ? (
+          // Case when isUserProfile is true
+          <>
+            <button
+              className="w-1/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
+              onClick={clickSearch}
+            >
+              <p className="font-sans">Search</p>
+            </button>
 
-        
+            <button
+              className="w-1/5 h-3/5 transition duration-500 ease-in-out transform active:scale-95 text-home-gold hover:underline"
+              onClick={clickLogout}
+            >
+              <p className="font-sans">Logout</p>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="w-2/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
+              onClick={() => navigate(`/user/${authUsername}/home`)}
+            >
+              <p className="font-sans">Go Back Home!</p>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

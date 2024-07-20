@@ -9,7 +9,7 @@ const transporter=nodemailer.createTransport({
     host:process.env.AUTH_SENDER_HOST,
     auth:{
         user:process.env.AUTH_SENDER_EMAIL,
-        pass:process.env.AUTH_SENDER_PASSWORD,
+        pass:process.env.AUTH_SENDER_PASSWORD, 
     }
 });
 
@@ -40,7 +40,7 @@ export const sendOtpVerificationEmail = asyncHandler(async (req, _) => {
         await newOtpVerification.save({validateBeforeSave: false});
         // console.log('OTP verification record saved:', newOtpVerification);
         await transporter.sendMail(mailOptions);
-        console.log('OTP email sent');
+        // console.log('OTP email sent');
     } catch (error) {
         console.error('Error saving OTP verification record:', error);
         if (error instanceof ApiError) {

@@ -7,7 +7,7 @@ import Layout from "../../Layout.jsx";
 import Home from "./Home.jsx";
 import Contact from "../Contact/Contact.jsx";
 import Projects from "../Projects/Projects.jsx";
-import More from "../More/More.jsx";
+import Achievements from "../Achievements/Achievements.jsx";
 import Signup from "../Signup/Signup.jsx";
 import VerifyOtp from "../VerifyOtp/VerifyOtp.jsx";
 import Login from "../Login/Login.jsx";
@@ -55,7 +55,7 @@ const UsernameLoader = () => {
           <Route path="user/:username/contact" element={<Contact />} />
           <Route path="user/:username/projects" element={<Projects />} />
           <Route path="user/:username/projects/:projectName" element={<ProjectPage />} />
-          <Route path="user/:username/more" element={<More />} />
+          <Route path="user/:username/achievements" element={<Achievements />} />
         </Route>
         <Route path="signup" element={<Signup />} />
         <Route path="signup/verify-otp" element={<VerifyOtp />} />

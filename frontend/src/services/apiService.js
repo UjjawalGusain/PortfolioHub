@@ -8,7 +8,8 @@ const USER_ENDPOINTS = {
   FETCH_USER_DATA: `/api/v1/users/fetch-user-data`,
   ADD_PROJECT: `/api/v1/users/add-project`, // post
   FETCH_USER_PROJECTS: `/api/v1/users/:username/projects`, // get
-  FETCH_PROJECT: `/api/v1/users/:username/projects/:projectName` //get
+  FETCH_PROJECT: `/api/v1/users/:username/projects/:projectName`, //get
+  SEND_EMAIL: `/api/v1/users/:username/contact`, //get
 };
 
 const PROFILE_ENDPOINTS = {

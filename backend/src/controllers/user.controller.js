@@ -10,6 +10,7 @@ import { OtpVerification } from "../models/otp.model.js";
 import { sendOtpVerificationEmail } from "../utils/sendOtpVerificationEmail.js";
 import { generateAccessTokenAndRefreshToken } from "../utils/generateAccessTokenAndRefreshToken.js";
 import { Project } from "../models/project.model.js";
+import nodemailer from "nodemailer";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -384,7 +385,6 @@ const addProject = asyncHandler(async (req, res) => {
     let imagesUrl = [];
     let thumbnailUrl = "";
 
-
     // Handle video uploads
     if (req.files && req.files.videos) {
       const videos = req.files.videos;
@@ -406,7 +406,6 @@ const addProject = asyncHandler(async (req, res) => {
       );
     }
     console.log("Reached1");
-
 
     // Handle image uploads
     if (req.files && req.files.images) {
@@ -430,7 +429,6 @@ const addProject = asyncHandler(async (req, res) => {
     }
     console.log("Reached2");
 
-
     // Handle thumbnail upload
     if (req.files && req.files.thumbnail) {
       const thumbnail = req.files.thumbnail;
@@ -450,8 +448,6 @@ const addProject = asyncHandler(async (req, res) => {
       thumbnailUrl = thumbnailNew?.url || "";
     }
     console.log("Reached3");
-
-
 
     const project = {
       name,
@@ -482,60 +478,6 @@ const addProject = asyncHandler(async (req, res) => {
     }
   }
 });
-
-// const fetchUserProjects = asyncHandler(async (req, res) => {
-//   const incomingRefreshToken =
-//     req.cookies.refreshToken || req.body.refreshToken;
-
-//   if (!incomingRefreshToken) {
-//     throw new ApiError(401, "Unauthorized Access");
-//   }
-
-//   try {
-//     const decodedToken = jwt.verify(
-//       incomingRefreshToken,
-//       process.env.REFRESH_TOKEN_SECRET
-//     );
-
-//     const user = await User.findById(decodedToken?._id);
-
-//     if (!user) {
-//       throw new ApiError(401, "Invalid Refresh Token");
-//     }
-//     if (incomingRefreshToken !== user?.refreshToken) {
-//       throw new ApiError(401, "Refresh token expired or used");
-//     }
-
-//     // console.log("User: ");
-//     // console.log(user);
-//     // console.log("Hello");
-
-//     const {
-//       projects
-//     } = user;
-//     const projectObjects = await Promise.all(
-//       projects.map(async (project) => {
-//         const projectObject = await Project.findById(project);
-//         return projectObject;
-//       })
-//     );
-
-//     const userProjects = {
-//       projectObjects
-//     };
-//     // console.log(userProjects);
-//     return res.json(
-//       new ApiResponse(200, userProjects, "User Projects Successfully fetched")
-//     );
-//   } catch (error) {
-//     if (error instanceof ApiError) {
-//       throw error;
-//     } else {
-//       throw new ApiError(401, "Error Fetching User Projects");
-//     }
-
-//   }
-// });
 
 const fetchUserProjects = asyncHandler(async (req, res) => {
   try {
@@ -614,7 +556,7 @@ const fetchProject = asyncHandler(async (req, res) => {
     const ownerObjects = await Promise.all(
       project.owners.map(async (ownerId) => {
         try {
-          return await User.findById(ownerId).select('-refreshToken -password');
+          return await User.findById(ownerId).select("-refreshToken -password");
         } catch (error) {
           console.error(`Owner with ID ${ownerId} not found`, error);
           return null;
@@ -622,15 +564,14 @@ const fetchProject = asyncHandler(async (req, res) => {
       })
     );
 
-    const validOwnerObjects = ownerObjects.filter(owner => owner !== null);
+    const validOwnerObjects = ownerObjects.filter((owner) => owner !== null);
     const projectObject = {
       ...project.toObject(), // Convert the Mongoose document to a plain object
-      owners: validOwnerObjects
+      owners: validOwnerObjects,
     };
 
     // const validProjects = projectObjects.filter((project) => project !== null);
     // console.log(projectObject);
-
 
     return res.json(
       new ApiResponse(200, projectObject, "Project successfully fetched")
@@ -645,6 +586,60 @@ const fetchProject = asyncHandler(async (req, res) => {
   }
 });
 
+const sendEmail = asyncHandler(async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username }).select(
+      "-password -refreshToken"
+    );
+
+    if (!user) {
+      throw new ApiError(404, `Owner with username ${username} not found`);
+    }
+
+    const userEmail = user.email;
+    if (!userEmail) {
+      throw new ApiError(404, `Email for username ${username} not found`);
+    }
+
+    const { firstName, lastName, email, message } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.AUTH_SENDER_HOST,
+      auth: {
+        user: process.env.AUTH_SENDER_EMAIL,
+        pass: process.env.AUTH_SENDER_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.AUTH_SENDER_EMAIL,
+      to: userEmail,
+      subject: "Contact Form Submission",
+      html: `
+        <p><strong>First Name:</strong> ${firstName}</p>
+        <p><strong>Last Name:</strong> ${lastName}</p>
+        <p><strong>Email By:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+    };
+    await transporter.sendMail(mailOptions);
+    // console.log("Email sent successfully");
+    return res.json(
+      new ApiResponse(200, {success: true}, "Email sent successfully")
+    );
+  } catch (error) {
+    console.error("Error sending email:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(500, "Error while sending he email.");
+    }
+  }
+});
+
 export {
   registerUser,
   loginUser,
@@ -655,4 +650,5 @@ export {
   addProject,
   fetchUserProjects,
   fetchProject,
+  sendEmail,
 };

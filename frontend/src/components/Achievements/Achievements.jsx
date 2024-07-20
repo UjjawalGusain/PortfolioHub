@@ -1,6 +1,6 @@
 import React from 'react'
 
-function More() {
+function Achievements() {
   return (
     <div className='h-screen bg-home-black'>
 
@@ -9,4 +9,4 @@ function More() {
   )
 }
 
-export default More
+export default Achievements
