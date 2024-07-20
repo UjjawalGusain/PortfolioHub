@@ -384,6 +384,7 @@ const addProject = asyncHandler(async (req, res) => {
     let imagesUrl = [];
     let thumbnailUrl = "";
 
+
     // Handle video uploads
     if (req.files && req.files.videos) {
       const videos = req.files.videos;
@@ -404,6 +405,8 @@ const addProject = asyncHandler(async (req, res) => {
         })
       );
     }
+    console.log("Reached1");
+
 
     // Handle image uploads
     if (req.files && req.files.images) {
@@ -425,15 +428,20 @@ const addProject = asyncHandler(async (req, res) => {
         })
       );
     }
+    console.log("Reached2");
+
 
     // Handle thumbnail upload
     if (req.files && req.files.thumbnail) {
       const thumbnail = req.files.thumbnail;
       const thumbnailPath = thumbnail[0].path;
+      console.log("Path: ", thumbnailPath);
       let thumbnailNew;
       try {
         thumbnailNew = await uploadFileToCloudinary(thumbnailPath);
+        console.log("Thumbnail new: ", thumbnailNew);
       } catch (uploadError) {
+        console.log("Here is the error: ", uploadError);
         throw new ApiError(
           500,
           `Error uploading thumbnail: ${uploadError.message}`
@@ -441,6 +449,9 @@ const addProject = asyncHandler(async (req, res) => {
       }
       thumbnailUrl = thumbnailNew?.url || "";
     }
+    console.log("Reached3");
+
+
 
     const project = {
       name,

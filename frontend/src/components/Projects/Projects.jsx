@@ -16,14 +16,12 @@ export default function Projects() {
     setShowAddProject(true);
   };
 
-
-
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          USER_ENDPOINTS.FETCH_USER_PROJECTS.replace(':username', username)
+          USER_ENDPOINTS.FETCH_USER_PROJECTS.replace(":username", username)
         );
         console.log(response);
         setProjects(response.data.data.projectObjects); // Adjust based on your response structure
@@ -47,7 +45,7 @@ export default function Projects() {
   }
 
   return (
-    <div className="h-screen w-full bg-home-black flex flex-col items-center text-white">
+    <div className="h-screen w-full bg-home-black flex flex-col items-center text-white relative">
       {showAddProject ? (
         <AddProjectCard setShowAddProject={setShowAddProject} />
       ) : (
@@ -56,6 +54,16 @@ export default function Projects() {
           projects={projects}
           handleAddProjectClick={handleAddProjectClick}
         />
+      )}
+      {!showAddProject ? (
+        <button
+          className="fixed bottom-4 left-4 border-2 border-home-gold hover:bg-home-gold hover:text-white text-home-gold font-bold py-2 px-4 rounded"
+          onClick={handleAddProjectClick}
+        >
+          Add Project
+        </button>
+      ) : (
+        <></>
       )}
     </div>
   );

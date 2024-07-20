@@ -50,7 +50,7 @@ const UsernameLoader = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to={`/user/${authUsername}/home`} />} />
+          <Route index element={<Navigate to={`/login`} />} />
           <Route path="user/:username/home" element={<Home />} />
           <Route path="user/:username/contact" element={<Contact />} />
           <Route path="user/:username/projects" element={<Projects />} />
