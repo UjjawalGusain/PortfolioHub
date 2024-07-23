@@ -1,10 +1,10 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { USER_ENDPOINTS } from '../../services/apiService';
-import MainDetails from './AddProjectDetails/MainDetails';
-import OptionalDetails from './AddProjectDetails/OptionalDetails';
-import FilesDetails from './AddProjectDetails/FilesDetails';
+import { USER_ENDPOINTS } from '../../../services/apiService';
+import MainDetails from './MainDetails';
+import OptionalDetails from './OptionalDetails';
+import FilesDetails from './FilesDetails';
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 
 function AddProjectCard({setShowAddProject}) {

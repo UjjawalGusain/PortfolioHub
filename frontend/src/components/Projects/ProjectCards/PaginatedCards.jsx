@@ -15,9 +15,9 @@ function PaginatedCards({ projectsPerPage, projects }) {
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * projectsPerPage) % projects.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
+    // console.log(
+    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
+    // );
     setProjectOffset(newOffset);
   };
 
@@ -26,17 +26,17 @@ function PaginatedCards({ projectsPerPage, projects }) {
       <ProjectCards currentProjects={currentProjects} />
       <ReactPaginate
         breakLabel="..."
-        nextLabel="next >"
+        nextLabel="Next >"
         onPageChange={handlePageClick}
         pageRangeDisplayed={5}
         pageCount={pageCount}
-        previousLabel="< previous"
+        previousLabel="< Prev"
         renderOnZeroPageCount={null}
-        containerClassName='flex gap-3 border-2 border-home-gold text-lg mb-5'
-        pageClassName = 'text-home-gold '
-        previousClassName = 'text-home-gold'
-        nextClassName = 'text-home-gold'
-        activeClassName = 'text-white'
+        containerClassName='flex text-xl w-2/5 justify-center gap-2'
+        pageClassName = 'border-2 w-16 rounded text-center border-black hover:underline'
+        previousClassName = 'mr-10 border-2 w-20 rounded text-center border-black hover:underline'
+        nextClassName = 'ml-10 border-2 w-20 rounded text-center border-black hover:underline'
+        activeClassName = 'bg-black text-white'
       />
     </>
   );

@@ -455,7 +455,7 @@ const addProject = asyncHandler(async (req, res) => {
       url,
       description,
       domain,
-      techStacks,
+      techStack: techStacks,
       stars,
       owners,
       videos: videosUrl,
@@ -475,6 +475,47 @@ const addProject = asyncHandler(async (req, res) => {
       throw error;
     } else {
       throw new ApiError(500, "Internal Server Error while adding project");
+    }
+  }
+});
+
+const deleteProject = asyncHandler(async (req, res) => {
+  try {
+    const projectId = req.body?.projectId;
+
+    if (!projectId) {
+      throw new ApiError(400, "Project ID is required");
+    }
+
+    const user = req.user;
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const projectIndex = user.projects.findIndex(project => project.toString() === projectId);
+
+    if (projectIndex === -1) {
+      return res.json(
+        new ApiResponse(200, {}, "Project not found in user's projects")
+      );
+    }
+
+    user.projects.splice(projectIndex, 1);
+    // console.log(user);
+
+    await user.save();
+
+    return res.json(
+      new ApiResponse(200, user, "Project removed from user's projects successfully")
+    );
+
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      console.error("Error Removing Project:", error);
+      throw new ApiError(500, "Error Removing Project");
     }
   }
 });
@@ -651,4 +692,5 @@ export {
   fetchUserProjects,
   fetchProject,
   sendEmail,
+  deleteProject
 };

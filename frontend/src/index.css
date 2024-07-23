@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 :root {
-    --homegold: #89CB4F;
-    --homeblack: #111216;
+  --homegold: #89cb4f;
+  --homeblack: #111216;
+  --homewhite: #ffffff;
+  --buttonred: #ff6464;
+  --textblue: #21243d;
+}
+
+html {
+  scroll-behavior: smooth;
 }

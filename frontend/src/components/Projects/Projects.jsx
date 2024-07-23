@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import AddProjectCard from "./AddProjectCard";
+import AddProjectCard from "./AddProjectDetails/AddProjectCard";
 import PaginatedCards from "./ProjectCards/PaginatedCards";
 import { USER_ENDPOINTS } from "../../services/apiService";
 import { useParams } from "react-router-dom";
+import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
 
 export default function Projects() {
   const { username } = useParams();
@@ -45,19 +46,28 @@ export default function Projects() {
   }
 
   return (
-    <div className="h-screen w-full bg-home-black flex flex-col items-center text-white relative">
+    <div
+      id="projects"
+      className="h-full w-full bg-home-white flex flex-col items-center text-black relative p-5"
+    >
+      <h1 className="text-4xl font-bold text-text-blue w-3/5 text-left ">
+        Projects
+      </h1>
+
+      <ScrollToTopButton />
+
       {showAddProject ? (
         <AddProjectCard setShowAddProject={setShowAddProject} />
       ) : (
         <PaginatedCards
-          projectsPerPage={6}
+          projectsPerPage={4}
           projects={projects}
           handleAddProjectClick={handleAddProjectClick}
         />
       )}
       {!showAddProject ? (
         <button
-          className="fixed bottom-4 left-4 border-2 border-home-gold hover:bg-home-gold hover:text-white text-home-gold font-bold py-2 px-4 rounded"
+          className="fixed bottom-4 left-4 border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red z-30"
           onClick={handleAddProjectClick}
         >
           Add Project

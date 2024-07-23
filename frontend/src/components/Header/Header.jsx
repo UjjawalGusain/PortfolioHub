@@ -54,27 +54,24 @@ function Header() {
     console.log("Search Openend");
   };
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-
   const isUserProfile = authUsername === pathUsername;
-  // const isUserProfile = true
   return (
-    <div className="h-20 flex bg-home-black sticky top-0">
-      <div className="w-1/3 flex text-home-gold">
-        <div className="ml-4 w-1/6 flex items-center justify-center">
+    <div className="h-20 flex bg-home-white sticky top-0 pr-10 z-20">
+      <div className="w-1/3 flex text-black">
+        <div className="ml-4 w-1/6 flex items-center justify-center ">
           <Link to="/">
             <img src="/logo.png" alt="Logo" className="h-auto max-w-full" />
           </Link>
         </div>
       </div>
-      <div className="w-1/3 flex flex-col justify-center p-2">
-        <ul className="flex justify-between items-center text-white font-sans">
+      <div className="w-1/3 flex justify-center text-black">
+        <ul className="flex justify-end items-center text-black font-sans font-medium gap-5 text-lg">
           <li>
             <NavLink
               to={`/user/${pathUsername}/home`}
-              className={({ isActive }) => (isActive ? "text-home-gold" : "")}
+              className={({ isActive }) =>
+                (isActive ? "text-button-red " : " ") + "hover:underline"
+              }
             >
               Home
             </NavLink>
@@ -82,7 +79,9 @@ function Header() {
           <li>
             <NavLink
               to={`/user/${pathUsername}/projects`}
-              className={({ isActive }) => (isActive ? "text-home-gold" : "")}
+              className={({ isActive }) =>
+                (isActive ? "text-button-red " : " ") + "hover:underline"
+              }
             >
               Projects
             </NavLink>
@@ -90,59 +89,77 @@ function Header() {
           <li>
             <NavLink
               to={`/user/${pathUsername}/contact`}
-              className={({ isActive }) => (isActive ? "text-home-gold" : "")}
+              className={({ isActive }) =>
+                (isActive ? "text-button-red " : " ") + "hover:underline"
+              }
             >
               Contact
             </NavLink>
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/achievements`}
-              className={({ isActive }) => (isActive ? "text-home-gold" : "")}
+              to={`/user/${pathUsername}/certifications`}
+              className={({ isActive }) =>
+                (isActive ? "text-button-red " : " ") + "hover:underline"
+              }
             >
-              Achievements
+              Certifications
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to={`/user/${pathUsername}/about-us`}
+              className={({ isActive }) =>
+                (isActive ? "text-button-red " : " ") + "hover:underline"
+              }
+            >
+              About Us
             </NavLink>
           </li>
         </ul>
       </div>
-      <div className="w-1/3 flex justify-center items-center">
+      <div className="w-1/3 flex justify-center items-center gap-8">
         {authUsername === "" ? (
           <>
-            <button
-              className="w-1/5 h-3/5 transition duration-500 ease-in-out transform active:scale-95 text-home-gold hover:underline"
-              onClick={() => navigate("/login")}
-            >
-              <p className="font-sans">Login</p>
-            </button>
+            <div className="flex gap-10">
+              <button
+                className="text-black font-sans font-medium text-lg hover:underline"
+                onClick={() => navigate("/login")}
+              >
+                <p className="font-sans">Login</p>
+              </button>
 
-            <button
-              className="w-1/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
-              onClick={() => navigate("/signup")}
-            >
-              <p className="font-sans">Signup</p>
-            </button>
+              <button
+                className="text-black font-sans font-medium gap-5 text-lg hover:underline"
+                onClick={() => navigate("/signup")}
+              >
+                <p className="font-sans">Signup</p>
+              </button>
+            </div>
           </>
         ) : isUserProfile ? (
           // Case when isUserProfile is true
           <>
-            <button
-              className="w-1/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
-              onClick={clickSearch}
-            >
-              <p className="font-sans">Search</p>
-            </button>
+            <div className="flex gap-10">
+              <button
+                className="text-black font-sans font-medium text-lg hover:underline"
+                onClick={clickSearch}
+              >
+                <p className="font-sans">Search Friends?</p>
+              </button>
 
-            <button
-              className="w-1/5 h-3/5 transition duration-500 ease-in-out transform active:scale-95 text-home-gold hover:underline"
-              onClick={clickLogout}
-            >
-              <p className="font-sans">Logout</p>
-            </button>
+              <button
+                className="text-black font-sans font-medium gap-5 text-lg hover:underline"
+                onClick={clickLogout}
+              >
+                <p className="font-sans">Logout</p>
+              </button>
+            </div>
           </>
         ) : (
           <>
             <button
-              className="w-2/5 h-3/5 border-2 border-home-gold rounded-xl transition duration-500 ease-in-out transform hover:bg-home-gold active:scale-95 text-home-gold hover:text-black"
+              className="text-black font-sans font-medium gap-5 text-lg hover:underline"
               onClick={() => navigate(`/user/${authUsername}/home`)}
             >
               <p className="font-sans">Go Back Home!</p>
@@ -150,6 +167,7 @@ function Header() {
           </>
         )}
       </div>
+      
     </div>
   );
 }

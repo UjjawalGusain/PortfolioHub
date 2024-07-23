@@ -7,12 +7,13 @@ import Layout from "../../Layout.jsx";
 import Home from "./Home.jsx";
 import Contact from "../Contact/Contact.jsx";
 import Projects from "../Projects/Projects.jsx";
-import Achievements from "../Achievements/Achievements.jsx";
 import Signup from "../Signup/Signup.jsx";
 import VerifyOtp from "../VerifyOtp/VerifyOtp.jsx";
 import Login from "../Login/Login.jsx";
 import ProjectPage from "../ProjectPage/ProjectPage.jsx";
 import { useParams } from "react-router-dom";
+import Certifications from "../Certifications/Certifications.jsx";
+import AboutUs from "../AboutUs/AboutUs.jsx";
 
 const UsernameLoader = () => {
   const { pathUsername } = useParams();
@@ -55,7 +56,8 @@ const UsernameLoader = () => {
           <Route path="user/:username/contact" element={<Contact />} />
           <Route path="user/:username/projects" element={<Projects />} />
           <Route path="user/:username/projects/:projectName" element={<ProjectPage />} />
-          <Route path="user/:username/achievements" element={<Achievements />} />
+          <Route path="user/:username/certifications" element={<Certifications />} />
+          <Route path="user/:username/about-us" element={<AboutUs />} />
         </Route>
         <Route path="signup" element={<Signup />} />
         <Route path="signup/verify-otp" element={<VerifyOtp />} />

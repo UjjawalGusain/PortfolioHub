@@ -9,6 +9,9 @@ export default {
       colors: { 
         "home-gold": "var(--homegold)", 
         "home-black": "var(--homeblack)", 
+        "home-white": "var(--homewhite)",
+        "button-red": "var(--buttonred)",
+        "text-blue": "var(--textblue)",
       },
     },
   },

@@ -10,6 +10,7 @@ const USER_ENDPOINTS = {
   FETCH_USER_PROJECTS: `/api/v1/users/:username/projects`, // get
   FETCH_PROJECT: `/api/v1/users/:username/projects/:projectName`, //get
   SEND_EMAIL: `/api/v1/users/:username/contact`, //get
+  DELETE_PROJECT: `/api/v1/users/:username/projects/deleteProject`
 };
 
 const PROFILE_ENDPOINTS = {
