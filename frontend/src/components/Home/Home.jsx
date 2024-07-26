@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { PROFILE_ENDPOINTS } from "../../services/apiService";
+import { PROFILE_ENDPOINTS, USER_ENDPOINTS } from "../../services/apiService";
 import { useParams } from "react-router-dom";
 import { fetchGithubData } from "../../api/githubApi";
 import { FaDownload } from "react-icons/fa";
+import { IoMdAddCircle } from "react-icons/io";
+import AddResumeButton from "./Buttons/AddResumeButton";
 
 function Home() {
   const { username } = useParams();
@@ -12,6 +14,48 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [githubLoading, setGithubLoading] = useState(true);
+  const [authUsername, setAuthUsername] = useState("");
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await axios.post(
+          USER_ENDPOINTS.FETCH_USER_DATA,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        setAuthUsername(response.data.data.username);
+      } catch (error) {
+        console.error("Error fetching username:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsername();
+  }, []);
+
+
+
+  const handleResumeUploaded = async () => {
+    try {
+      const response = await axios.get(
+        PROFILE_ENDPOINTS.FETCH_USER_PROFILE.replace(":username", username)
+      );
+      setUserData(response.data.data);
+      console.log("User data updated successfully.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleShowResume = () => {
+    if (userData && userData.resume) {
+      window.open(userData.resume, "_blank");
+    }
+  };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,10 +92,6 @@ function Home() {
     }
   }, [userData]);
 
-  const handleDownloadClick = () => {
-    // Implement the download functionality here
-  };
-
   if (loading || githubLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -66,6 +106,8 @@ function Home() {
     );
   }
 
+  const isUserAuthenticated = username === authUsername
+
   return (
     <div className="h-full bg-home-white">
       <div className="px-16 flex">
@@ -78,13 +120,19 @@ function Home() {
             <p className="text-4xl mb-4">{userData.position}</p>
             <p className="text-lg">{userData.description}</p>
           </div>
-          <div className="my-5">
-            <button
-              className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red"
-              onClick={handleDownloadClick}
-            >
-              Download Resume <FaDownload className="relative top-1 ml-5" />
-            </button>
+          <div className="my-5 flex gap-3">
+          {userData.resume && (
+              <button
+                className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red"
+                onClick={handleShowResume}
+              >
+                Show Resume <FaDownload className="relative top-1 ml-5" />
+              </button>
+            )}
+
+            {/*wvebvfohwdvohewvoho */}
+            
+            {userData && isUserAuthenticated && <AddResumeButton userData={userData} handleResumeUploaded={handleResumeUploaded} />}
           </div>
         </div>
 
@@ -140,7 +188,6 @@ function Home() {
         </div>
       </div>
     </div>
-
   );
 }
 

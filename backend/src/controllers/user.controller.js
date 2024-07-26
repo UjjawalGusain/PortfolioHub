@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/user.model.js";
+import { User } from "../models/user.model.js"; 
 import { uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { isValidEmail, isValidGitHubId } from "../utils/validator.js";
@@ -11,6 +11,7 @@ import { sendOtpVerificationEmail } from "../utils/sendOtpVerificationEmail.js";
 import { generateAccessTokenAndRefreshToken } from "../utils/generateAccessTokenAndRefreshToken.js";
 import { Project } from "../models/project.model.js";
 import nodemailer from "nodemailer";
+import { Certification } from "../models/certification.model.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -681,6 +682,192 @@ const sendEmail = asyncHandler(async (req, res) => {
   }
 });
 
+const addCertification = asyncHandler(async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const { title, description } = req.body;
+
+    if (!title || !description) {
+      throw new ApiError(400, "Missing required certificate data");
+    }
+
+    let certificateUrl = "";
+
+    if (req.files && req.files.certificateImg) {
+      const certificateImg = req.files.certificateImg[0];
+      const certificateImgPath = certificateImg.path;
+
+      try {
+        const uploadedCertificate = await uploadFileToCloudinary(certificateImgPath);
+        certificateUrl = uploadedCertificate.url || "";
+      } catch (uploadError) {
+        throw new ApiError(500, `Error uploading certificate: ${uploadError.message}`);
+      }
+    }
+
+    const certificate = {
+      title,
+      description,
+      certificateImg: certificateUrl,
+    };
+
+    const newCertificate = await Certification.create(certificate);
+
+    user.certifications.push(newCertificate._id);
+  
+    await user.save();
+    const newUser = await User.findById(user._id)
+    return res.status(200).json(new ApiResponse(200, newCertificate, "New certificate added successfully"));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(500, "Internal Server Error while adding certificate");
+    }
+  }
+});
+
+const fetchCertifications = asyncHandler(async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username }).select(
+      "-password -refreshToken"
+    );
+
+    if (!user) {
+      throw new ApiError(404, `Owner with username ${username} not found`);
+    }
+
+    // console.log(user);
+
+    const certificationIds = user.certifications;
+
+    const certificates = await Certification.find({_id : { $in:  certificationIds}})
+
+    return res.json(
+      new ApiResponse(200, certificates, "Certificates successfully fetched")
+    );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      console.error("Error Fetching User Certificates:", error);
+      throw new ApiError(500, "Error Fetching User Certificates");
+    }
+  }
+});
+
+const deleteCertification = asyncHandler(async (req, res) => {
+  try {
+    const certificationId = req.body?.certificationId;
+
+    if (!certificationId) {
+      throw new ApiError(400, "Certification ID is required");
+    }
+
+    const user = req.user;
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const certificationIndex = user.certifications.findIndex(certification => certification.toString() === certificationId);
+
+    if (certificationIndex === -1) {
+      return res.json(
+        new ApiResponse(200, {}, "Certification not found in user's certifications")
+      );
+    }
+
+    user.certifications.splice(certificationIndex, 1);
+    console.log(user);
+
+    await user.save();
+
+    return res.json(
+      new ApiResponse(200, user, "Certification removed from user's certifications successfully")
+    );
+
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      console.error("Error Removing Certification:", error);
+      throw new ApiError(500, "Error Removing Certification");
+    }
+  }
+});
+
+const addResume = asyncHandler(async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    let resumeUrl = "";
+
+    if (req.files && req.files.resume) {
+      const resume = req.files.resume[0];
+      const resumePath = resume.path;
+      
+      try {
+        const uploadedResume = await uploadFileToCloudinary(resumePath);
+        resumeUrl = uploadedResume.url || "";
+      } catch (uploadError) {
+        throw new ApiError(500, `Error uploading resume: ${uploadError.message}`);
+      }
+    }
+
+    user.resume = resumeUrl
+    await user.save();
+    const newUser = await User.findById(user._id)
+    console.log(newUser)
+    return res.status(200).json(new ApiResponse(200, newUser, "Resume updated successfully"));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(500, "Internal Server Error while adding resume");
+    }
+  }
+});
+
+const searchUsers = asyncHandler(async (req, res) => {
+  try {
+    const {username} = req.query
+
+    if(!username) {
+      throw new ApiError(404, `Username ${username} not found`);
+    }
+
+    const users = await User.find({
+      username: { $regex: new RegExp(username, 'i') } // Case-insensitive search
+    });
+
+    if(users.length === 0) {
+      throw new ApiError(404, `No users found`);
+    }
+
+    return res.json(
+      new ApiResponse(200, users, "Users successfully fetched")
+    );
+    
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      console.error("Error Fetching Users:", error);
+      throw new ApiError(500, "Error Fetching Users");
+    }
+  }
+})
+
 export {
   registerUser,
   loginUser,
@@ -692,5 +879,10 @@ export {
   fetchUserProjects,
   fetchProject,
   sendEmail,
-  deleteProject
+  deleteProject,
+  addCertification,
+  fetchCertifications,
+  deleteCertification,
+  addResume,
+  searchUsers
 };

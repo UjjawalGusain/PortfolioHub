@@ -44,6 +44,9 @@ const userSchema = new Schema({
     coverImg: {
         type: String, // cloudinary
     },
+    resume: {
+        type: String, // cloudinary
+    },
     techStack: [
         {
             type: String,
@@ -58,6 +61,12 @@ const userSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: "Project"
+        }
+    ],
+    certifications: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Certifications"
         }
     ],
     refreshToken: {

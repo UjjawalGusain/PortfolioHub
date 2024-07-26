@@ -5,6 +5,7 @@ import { USER_ENDPOINTS } from "../../services/apiService";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import SearchButton from "./SearchButton/SearchButton";
 
 function Header() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ function Header() {
 
   const isUserProfile = authUsername === pathUsername;
   return (
-    <div className="h-20 flex bg-home-white sticky top-0 pr-10 z-20">
+    <div className="h-20 flex bg-home-white sticky top-0 pr-10 z-20 border-none">
       <div className="w-1/3 flex text-black">
         <div className="ml-4 w-1/6 flex items-center justify-center ">
           <Link to="/">
@@ -141,12 +142,13 @@ function Header() {
           // Case when isUserProfile is true
           <>
             <div className="flex gap-10">
-              <button
+              {/* <button
                 className="text-black font-sans font-medium text-lg hover:underline"
                 onClick={clickSearch}
               >
                 <p className="font-sans">Search Friends?</p>
-              </button>
+              </button> */}
+              <SearchButton/>
 
               <button
                 className="text-black font-sans font-medium gap-5 text-lg hover:underline"

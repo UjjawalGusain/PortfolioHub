@@ -12,6 +12,27 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authUsername, setAuthUsername] = useState("");
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await axios.post(
+          USER_ENDPOINTS.FETCH_USER_DATA,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        setAuthUsername(response.data.data.username);
+      } catch (error) {
+        console.error("Error fetching username:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsername();
+  }, []);
 
   const handleAddProjectClick = () => {
     setShowAddProject(true);
@@ -45,6 +66,8 @@ export default function Projects() {
     return <p className="text-red-500">{error}</p>;
   }
 
+  const isUserAuthenticate = authUsername === username
+
   return (
     <div
       id="projects"
@@ -65,7 +88,7 @@ export default function Projects() {
           handleAddProjectClick={handleAddProjectClick}
         />
       )}
-      {!showAddProject ? (
+      {isUserAuthenticate && !showAddProject ? (
         <button
           className="fixed bottom-4 left-4 border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red z-30"
           onClick={handleAddProjectClick}

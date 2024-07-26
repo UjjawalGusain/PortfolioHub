@@ -101,6 +101,7 @@ const CardDefault = ({ project }) => {
       <ConfirmationPopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
+        deleteObject={"project"}
         onConfirm={() => {
           handleProjectDelete();
           setIsPopupOpen(false);
