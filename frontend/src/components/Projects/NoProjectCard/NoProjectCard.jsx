@@ -1,18 +1,22 @@
 import React from "react";
-import { CiSquarePlus } from "react-icons/ci";
+import { FaPlusSquare } from "react-icons/fa";
 
-function NoProjectCard() {
+function NoProjectCard({ handleAddProjectClick }) {
   return (
-    <div className="flex w-full h-full justify-center items-center">
-      <div className="flex flex-col w-72 h-72 border border-home-gold rounded-2xl items-center justify-center bg-gray-800 bg-opacity-75 shadow-lg transition-transform duration-300 ease-in-out hover:shadow-2xl transform hover:scale-105">
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <h1 className="text-center text-3xl text-white font-bold cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105">
-            No Project? Add a New Project Right Now
-          </h1>
-          <button 
-            className="flex items-center justify-center bg-home-gold p-3 rounded-full transition-transform duration-300 ease-in-out transform hover:scale-110 active:scale-95 shadow-md hover:shadow-lg"
+    <div className="flex w-full h-full justify-center items-center p-20">
+      <div className="flex flex-col justify-center items-center gap-6 p-6 w-80 h-80 border-2 border-gray-300 rounded-lg shadow-lg bg-white">
+        <div className="flex flex-col justify-center items-center text-center">
+          <h1 className="text-3xl font-semibold text-gray-700">No Projects?</h1>
+          <h2 className="text-xl font-medium text-gray-500">
+            Add one right now
+          </h2>
+        </div>
+        <div className="flex justify-center items-center mt-4">
+          <button
+            className="bg-button-red text-white rounded-full p-4 hover:bg-white hover:text-button-red border-2 border-button-red transition-colors duration-300 ease-in-out"
+            onClick={handleAddProjectClick}
           >
-            <CiSquarePlus className="text-white text-6xl" />
+            <FaPlusSquare className="w-8 h-8" />
           </button>
         </div>
       </div>
