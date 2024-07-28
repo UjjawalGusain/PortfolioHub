@@ -10,7 +10,7 @@ import ConfirmationPopup from "./ConfirmationPopup/ConfirmationPopup";
 
 TimeAgo.addLocale(en);
 
-const CardDefault = ({ project }) => {
+const CardDefault = ({ project, isUserAuthenticate }) => {
   const { thumbnail, name, description, updatedAt, _id } = project;
   const { username } = useParams();
   const [authUsername, setAuthUsername] = useState("");
@@ -18,25 +18,25 @@ const CardDefault = ({ project }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.post(
-          USER_ENDPOINTS.FETCH_USER_DATA,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        setAuthUsername(response.data.data.username);
-      } catch (error) {
-        console.error("Error fetching username:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsername();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUsername = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         USER_ENDPOINTS.FETCH_USER_DATA,
+  //         {},
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       setAuthUsername(response.data.data.username);
+  //     } catch (error) {
+  //       console.error("Error fetching username:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchUsername();
+  // }, []);
 
   const handleProjectClick = () => {
     navigate(`${name}/`);
@@ -68,7 +68,6 @@ const CardDefault = ({ project }) => {
     setTimeAgo(formattedTime);
   }, [updatedAt]);
 
-  const isAuthUser = authUsername === username;
 
   return (
     <div className="flex w-3/5 h-full bg-home-white py-10 border-b-2 border-black justify-center items-center">
@@ -88,7 +87,7 @@ const CardDefault = ({ project }) => {
           >
             Let's see the project!
           </button>
-          {isAuthUser && (
+          {isUserAuthenticate && (
             <button
               className="rounded text-black text-start text-3xl bg-red-500 hover:bg-home-white hover:border-red-500 border-2 w-fit px-3 py-1"
               onClick={() => setIsPopupOpen(true)}

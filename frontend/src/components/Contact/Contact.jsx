@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfileData } from "../../redux/profile/profileThunks.js";
 
 function Contact() {
   const {
@@ -17,28 +19,29 @@ function Contact() {
   const [email, setEmail] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState(null);
+  const userData = useSelector((state) => state.profile?.profile);
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.post(
-          USER_ENDPOINTS.FETCH_USER_DATA,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        console.log(response.data.data);
-        setEmail(response.data.data.email);
-      } catch (error) {
-        console.error("Error fetching username:", error);
-      } finally {
+    const fetchProfileDataFunc = async () => {
+      if (!userData) {
+        try {
+
+          await dispatch(fetchProfileData(username)).unwrap();
+          setLoading(false);
+        } catch (err) {
+          console.error("Error fetching profile user data:", err);
+          setError(err.message);
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
       }
     };
-
-    fetchUsername();
-  }, []);
+    fetchProfileDataFunc();
+  }, [userData, dispatch, username]);
 
   const onSubmit = async (data) => {
     try {

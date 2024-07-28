@@ -4,7 +4,9 @@ import AddProjectCard from "./AddProjectDetails/AddProjectCard";
 import PaginatedCards from "./ProjectCards/PaginatedCards";
 import { USER_ENDPOINTS } from "../../services/apiService";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
+import {fetchUserData} from "../../redux/auth/authThunks.js"
 
 export default function Projects() {
   const { username } = useParams();
@@ -12,27 +14,33 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [authUsername, setAuthUsername] = useState("");
+  const dispatch = useDispatch()
+
+  const authUserData = useSelector((state) => state.auth?.user);
+  const authUsername = authUserData?.username || "";
+
+  const userData = useSelector((state) => state.profile?.profile);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.post(
-          USER_ENDPOINTS.FETCH_USER_DATA,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        setAuthUsername(response.data.data.username);
-      } catch (error) {
-        console.error("Error fetching username:", error);
-      } finally {
+    const fetchAuthData = async () => {
+      // console.log("auth user: ", authUserData);
+      if (!authUserData) {
+        try {
+          await dispatch(fetchUserData()).unwrap();
+          // console.log("Set Auth User Data");
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError(err.message);
+          setLoading(false);
+        }
+      } else {
+        // console.log("We already have user");
         setLoading(false);
       }
     };
-    fetchUsername();
-  }, []);
+
+    fetchAuthData();
+  }, [authUserData, dispatch]);
 
   const handleAddProjectClick = () => {
     setShowAddProject(true);

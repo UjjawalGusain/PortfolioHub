@@ -5,15 +5,13 @@ import { USER_ENDPOINTS } from "../../services/apiService.js";
 import axios from 'axios'; 
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { clearPassword } from "../../redux/auth/authSlice.js";
+// import { clearPassword } from "../../redux/auth/authSlice.js";
 
 function VerifyOtp() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.auth.user?.data || {});
-  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log("userData in VerifyOtp:", userData);
@@ -34,7 +32,6 @@ function VerifyOtp() {
         console.log("Verification Response:", response.data);
   
         if (response.data.success) {
-          dispatch(clearPassword());
           console.log("New User Data: ");
           console.log(userData);
           navigate("/login");

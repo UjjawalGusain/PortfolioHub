@@ -47,7 +47,7 @@ const SearchButton = () => {
         params: { username: searchQuery },
       });
       setResults(response.data.data);
-      setShowDropdown(response.data.data.length > 0); // Show dropdown only if there are results
+      setShowDropdown(response.data.data.length > 0); 
     } catch (err) {
       setError("Error fetching search results.");
     } finally {

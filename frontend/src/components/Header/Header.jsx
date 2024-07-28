@@ -6,9 +6,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import SearchButton from "./SearchButton/SearchButton";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/auth/authThunks";
 
 function Header() {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const { username } = useParams();
   const pathUsername = username;
   const [authUsername, setAuthUsername] = useState("");
@@ -35,16 +38,8 @@ function Header() {
   }, []);
 
   const clickLogout = async () => {
-    try {
-      const res = await axios.post(
-        USER_ENDPOINTS.LOGOUT,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log("Successfully logged out: ", res.data);
+    try {  
+      dispatch(logout())
       navigate("/login");
     } catch (error) {
       console.error("Error during logout:", error);

@@ -11,7 +11,7 @@ function ProjectCards({ currentProjects, handleAddProjectClick, isUserAuthentica
         )}
         {currentProjects?.length > 0 &&
           currentProjects.map((project) => (
-            <CardDefault key={project._id} project={project} />
+            <CardDefault key={project._id} project={project} isUserAuthenticate={isUserAuthenticate}/>
           ))}
       </div>
     </div>

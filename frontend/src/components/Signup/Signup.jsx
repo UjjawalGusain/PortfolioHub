@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { signup } from "../../redux/auth/authThunks.js";
 
 function Signup() {
   const {
@@ -10,11 +8,8 @@ function Signup() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { error, isAuthenticated } = useSelector(
-    (state) => state.auth.auth || {}
-  );
+
 
   const positions = [
     "Full Stack Developer",
@@ -61,7 +56,6 @@ function Signup() {
     formData.append("profilePic", data.profilePic[0]);
     formData.append("coverImg", data.coverImg[0]);
 
-    dispatch(signup(formData));
   };
 
   useEffect(() => {

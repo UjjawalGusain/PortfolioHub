@@ -1,77 +1,77 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { PROFILE_ENDPOINTS, USER_ENDPOINTS } from "../../services/apiService";
 import { useParams } from "react-router-dom";
 import { fetchGithubData } from "../../api/githubApi";
 import { FaDownload } from "react-icons/fa";
-import { IoMdAddCircle } from "react-icons/io";
 import AddResumeButton from "./Buttons/AddResumeButton";
+import { fetchUserData } from "../../redux/auth/authThunks";
+import { fetchProfileData } from "../../redux/profile/profileThunks";
+import { useDispatch, useSelector } from "react-redux";
+
+// What do I have to do?
+
+// Basically, there will be two slices: user slice, and profile slice
+// User slice will contain all the logged in user info
+// Profile slice will contain all the opened user info(logged in or not)
+
+// All the details that will be opened will be based on profile slice info
+// But, using the user slice info, we can check if the profile opened is of user or not
+
+// So here will be the step by step of what I have to do
+
+// 1. Create a user slice. It will have a reducer which will be called when I want to refresh the user data.
+// 2. Create a profile slice. It will be have a reducer which will be called when I want to refresh the profile data.
 
 function Home() {
   const { username } = useParams();
-  const [userData, setUserData] = useState(null);
   const [githubData, setGithubData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [githubLoading, setGithubLoading] = useState(true);
-  const [authUsername, setAuthUsername] = useState("");
+  const dispatch = useDispatch();
+
+
+  const [loading, setLoading] = useState(true);
+  const authUserData = useSelector((state) => state.auth?.user);
+  const authUsername = authUserData?.username || "";
+
+  const userData = useSelector((state) => state.profile?.profile);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.post(
-          USER_ENDPOINTS.FETCH_USER_DATA,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        setAuthUsername(response.data.data.username);
-      } catch (error) {
-        console.error("Error fetching username:", error);
-      } finally {
+    const fetchAuthData = async () => {
+      if (!authUserData) {
+        try {
+          await dispatch(fetchUserData()).unwrap();
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError(err.message);
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
       }
     };
-    fetchUsername();
-  }, []);
 
-
-
-  const handleResumeUploaded = async () => {
-    try {
-      const response = await axios.get(
-        PROFILE_ENDPOINTS.FETCH_USER_PROFILE.replace(":username", username)
-      );
-      setUserData(response.data.data);
-      console.log("User data updated successfully.");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleShowResume = () => {
-    if (userData && userData.resume) {
-      window.open(userData.resume, "_blank");
-    }
-  };
-  
+    fetchAuthData();
+  }, [authUserData, dispatch]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          PROFILE_ENDPOINTS.FETCH_USER_PROFILE.replace(":username", username)
-        );
-        setUserData(response.data.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
+    const fetchProfileDataFunc = async () => {
+      if (!userData || userData.username !== username) {
+        try {
+          await dispatch(fetchProfileData(username)).unwrap();
+          setLoading(false);
+        } catch (err) {
+          console.error("Error fetching profile user data:", err);
+          setError(err.message);
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [username]);
+
+    fetchProfileDataFunc();
+  }, [userData, dispatch, username]);
+
 
   useEffect(() => {
     const fetchGithub = async () => {
@@ -84,15 +84,30 @@ function Home() {
       } catch (error) {
         console.error("Error fetching GitHub data:", error);
         setGithubLoading(false);
+        setGithubData(null)
       }
     };
 
     if (userData) {
       fetchGithub();
     }
-  }, [userData]);
+  }, [userData, username]);
 
-  if (loading || githubLoading) {
+  const handleResumeUploaded = async () => {
+    try {
+      await dispatch(fetchProfileData(username)).unwrap();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleShowResume = () => {
+    if (userData && userData.resume) {
+      window.open(userData.resume, "_blank");
+    }
+  };
+
+  if (loading || githubLoading || !userData) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-white text-2xl">Loading...</p>
@@ -106,7 +121,7 @@ function Home() {
     );
   }
 
-  const isUserAuthenticated = username === authUsername
+  const isUserAuthenticated = username === authUsername;
 
   return (
     <div className="h-full bg-home-white">
@@ -121,7 +136,7 @@ function Home() {
             <p className="text-lg">{userData.description}</p>
           </div>
           <div className="my-5 flex gap-3">
-          {userData.resume && (
+            {userData.resume && (
               <button
                 className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out"
                 onClick={handleShowResume}
@@ -130,8 +145,12 @@ function Home() {
               </button>
             )}
 
-            
-            {userData && isUserAuthenticated && <AddResumeButton userData={userData} handleResumeUploaded={handleResumeUploaded} />}
+            {userData && isUserAuthenticated && (
+              <AddResumeButton
+                userData={userData}
+                handleResumeUploaded={handleResumeUploaded}
+              />
+            )}
           </div>
         </div>
 

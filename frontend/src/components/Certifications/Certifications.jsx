@@ -6,6 +6,8 @@ import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ConfirmationPopup from "../Projects/ProjectCards/ConfirmationPopup/ConfirmationPopup";
 import NoCertificationCard from "./NoCertification/NoCertificationCard";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserData } from "../../redux/auth/authThunks";
 
 function Certifications() {
   const [addCertificationVisible, setAddCertificationVisible] = useState(false);
@@ -15,28 +17,33 @@ function Certifications() {
   const [hoveredCert, setHoveredCert] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const dispatch = useDispatch()
 
-  const [authUsername, setAuthUsername] = useState("");
+
+  const authUserData = useSelector((state) => state.auth?.user);
+  const authUsername = authUserData?.username || "";
+
+  const userData = useSelector((state) => state.profile?.profile);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.post(
-          USER_ENDPOINTS.FETCH_USER_DATA,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        setAuthUsername(response.data.data.username);
-      } catch (error) {
-        console.error("Error fetching username:", error);
-      } finally {
+    const fetchAuthData = async () => {
+      if (!authUserData) {
+        try {
+          await dispatch(fetchUserData()).unwrap();
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError(err.message);
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
       }
     };
-    fetchUsername();
-  }, []);
+
+    fetchAuthData();
+  }, [authUserData, dispatch]);
+
+
 
   const handleAddCertification = () => {
     setAddCertificationVisible(true);

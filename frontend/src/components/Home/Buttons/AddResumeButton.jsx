@@ -22,7 +22,7 @@ const AddResumeButton = ({ userData, handleResumeUploaded }) => {
 
       const formData = new FormData();
       formData.append("resume", file);
-
+ 
       try {
         await axios.post(USER_ENDPOINTS.ADD_RESUME, formData, {
           headers: {
@@ -60,7 +60,7 @@ const AddResumeButton = ({ userData, handleResumeUploaded }) => {
         accept="application/pdf"
         onChange={handleFileChange}
       />
-      {fileName && <p>Uploaded File: {fileName}</p>}
+      {uploading && fileName && <p>Uploaded File: {fileName}</p>}
       {uploading && <p>Uploading...</p>}
       {error && <p className="text-red-500">{error}</p>}
     </>

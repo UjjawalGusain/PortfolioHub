@@ -1,18 +1,48 @@
 import { USER_ENDPOINTS } from "../../services/apiService.js";
 import axios from "axios";
-import { signupStart, signupSuccess, signupFailure } from "./authSlice.js";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const signup = (userData) => async (dispatch) => {
+export const fetchUserData = createAsyncThunk("fetchUserData", async () => {
   try {
-    dispatch(signupStart());
-    const response = await axios.post(USER_ENDPOINTS.REGISTER, userData);
-    dispatch(signupSuccess(response.data));
+    const response = await axios.post(
+      USER_ENDPOINTS.FETCH_USER_DATA,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    // console.log("Response.data.data: ", response.data.data);
+    return response.data.data;
   } catch (error) {
-    if (error.response) {
-      dispatch(signupFailure(error.response.data.message));
-    } else {
-      dispatch(signupFailure(error.message));
-    }
+    console.error("Error fetching user data:", error);
   }
-};
+});
 
+export const login = createAsyncThunk("login", async (data) => {
+  try {
+    const res = await axios.post(USER_ENDPOINTS.LOGIN, data, {
+      withCredentials: true,
+    });
+
+    // console.log("We logged in res.data.data.user: ", res.data.data.user);
+    return res.data.data.user;
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
+});
+
+export const logout = createAsyncThunk("logout", async () => {
+  try {
+    const res = await axios.post(
+      USER_ENDPOINTS.LOGOUT,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+
+    // console.log("Successfully logged out: ", res.data);
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+});
