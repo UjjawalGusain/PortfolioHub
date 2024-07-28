@@ -59,7 +59,7 @@ function Contact() {
     <div className="h-full w-full bg-home-white flex flex-col items-center pb-20">
       <div className="p-5 flex flex-col items-center gap-3">
         <a href="#contact-section">
-          <button className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red w-full text-home-white hover:text-button-red">
+          <button className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red w-full text-home-white hover:text-button-red transition-colors duration-300 ease-in-out">
             Get in Touch
           </button>
         </a>
@@ -180,7 +180,7 @@ function Contact() {
 
         <button
           type="submit"
-          className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red w-full text-home-white hover:text-button-red"
+          className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red w-full text-home-white hover:text-button-red transition-colors duration-300 ease-in-out"
         >
           Send Message
         </button>

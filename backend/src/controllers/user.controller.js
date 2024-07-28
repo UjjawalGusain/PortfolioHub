@@ -341,15 +341,12 @@ const addProject = asyncHandler(async (req, res) => {
     const projectData = req.body;
     const {
       name,
-      repoId,
       url,
       description,
       domain,
       techStack,
-      stars,
       ownersUsernames,
     } = projectData;
-
     const ownerUsernames = ownersUsernames
       .split(",")
       .map((username) => username.trim());
@@ -358,7 +355,6 @@ const addProject = asyncHandler(async (req, res) => {
     // Validate required fields
     if (
       !name ||
-      !repoId ||
       !url ||
       !description ||
       !domain ||
@@ -367,6 +363,7 @@ const addProject = asyncHandler(async (req, res) => {
     ) {
       throw new ApiError(400, "Missing required project data");
     }
+    console.log(ownerUsernames);
 
     // Find owners by usernames
     const owners = await Promise.all(
@@ -381,6 +378,7 @@ const addProject = asyncHandler(async (req, res) => {
         return user;
       })
     );
+
 
     let videosUrl = [];
     let imagesUrl = [];
@@ -428,7 +426,7 @@ const addProject = asyncHandler(async (req, res) => {
         })
       );
     }
-    console.log("Reached2");
+    console.log("Reached2", req.files.thumbnail);
 
     // Handle thumbnail upload
     if (req.files && req.files.thumbnail) {
@@ -452,22 +450,23 @@ const addProject = asyncHandler(async (req, res) => {
 
     const project = {
       name,
-      repoId,
       url,
       description,
       domain,
       techStack: techStacks,
-      stars,
       owners,
       videos: videosUrl,
       images: imagesUrl,
       thumbnail: thumbnailUrl,
     };
+    console.log(project);
 
     const newProject = await Project.create(project);
+    console.log("Reached 4");
     user.projects.push(newProject._id);
+    console.log("Reached 5");
     await user.save();
-
+    console.log("Reached 6");
     return res
       .status(200)
       .json(new ApiResponse(200, newProject, "New project added successfully"));
@@ -504,6 +503,8 @@ const deleteProject = asyncHandler(async (req, res) => {
 
     user.projects.splice(projectIndex, 1);
     // console.log(user);
+
+    await Project.findByIdAndDelete(projectId);
 
     await user.save();
 
@@ -594,7 +595,7 @@ const fetchProject = asyncHandler(async (req, res) => {
     const projects = await Project.find({ _id: { $in: projectIds } });
     console.log("Project Name: ", username);
     const project = projects.find((project) => project.name === projectName);
-    // console.log(project);
+
     const ownerObjects = await Promise.all(
       project.owners.map(async (ownerId) => {
         try {
@@ -613,7 +614,6 @@ const fetchProject = asyncHandler(async (req, res) => {
     };
 
     // const validProjects = projectObjects.filter((project) => project !== null);
-    // console.log(projectObject);
 
     return res.json(
       new ApiResponse(200, projectObject, "Project successfully fetched")
@@ -786,7 +786,7 @@ const deleteCertification = asyncHandler(async (req, res) => {
 
     user.certifications.splice(certificationIndex, 1);
     console.log(user);
-
+    await Certification.findByIdAndDelete(certificationId);
     await user.save();
 
     return res.json(

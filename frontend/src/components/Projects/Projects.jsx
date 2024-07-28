@@ -46,7 +46,7 @@ export default function Projects() {
           USER_ENDPOINTS.FETCH_USER_PROJECTS.replace(":username", username)
         );
         console.log(response);
-        setProjects(response.data.data.projectObjects); // Adjust based on your response structure
+        setProjects(response.data.data.projectObjects); 
       } catch (error) {
         setError("Error fetching projects.");
         console.error("Error fetching projects:", error);
@@ -73,24 +73,25 @@ export default function Projects() {
       id="projects"
       className="h-full w-full bg-home-white flex flex-col items-center text-black relative p-5"
     >
-      <h1 className="text-4xl font-bold text-text-blue w-3/5 text-left ">
+      {projects.length == 0 || showAddProject? (<></>) : (<h1 className="text-4xl font-bold text-text-blue w-3/5 text-left ">
         Projects
-      </h1>
+      </h1>)}
 
       <ScrollToTopButton />
 
       {showAddProject ? (
-        <AddProjectCard setShowAddProject={setShowAddProject} />
+        <AddProjectCard setShowAddProject={setShowAddProject}/>
       ) : (
         <PaginatedCards
-          projectsPerPage={4}
+          projectsPerPage={5}
           projects={projects}
           handleAddProjectClick={handleAddProjectClick}
+          isUserAuthenticate={isUserAuthenticate}
         />
       )}
       {isUserAuthenticate && !showAddProject ? (
         <button
-          className="fixed bottom-4 left-4 border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:border-button-red z-30"
+          className="fixed bottom-4 left-4 border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
           onClick={handleAddProjectClick}
         >
           Add Project

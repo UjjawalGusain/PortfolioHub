@@ -51,16 +51,12 @@ function Header() {
     }
   };
 
-  const clickSearch = () => {
-    console.log("Search Openend");
-  };
-
   const isUserProfile = authUsername === pathUsername;
   return (
     <div className="h-20 flex bg-home-white sticky top-0 pr-10 z-20 border-none">
       <div className="w-1/3 flex text-black">
         <div className="ml-4 w-1/6 flex items-center justify-center ">
-          <Link to="/">
+          <Link to={`/user/${authUsername}/home`}>
             <img src="/logo.png" alt="Logo" className="h-auto max-w-full" />
           </Link>
         </div>
@@ -139,15 +135,8 @@ function Header() {
             </div>
           </>
         ) : isUserProfile ? (
-          // Case when isUserProfile is true
           <>
             <div className="flex gap-10">
-              {/* <button
-                className="text-black font-sans font-medium text-lg hover:underline"
-                onClick={clickSearch}
-              >
-                <p className="font-sans">Search Friends?</p>
-              </button> */}
               <SearchButton/>
 
               <button

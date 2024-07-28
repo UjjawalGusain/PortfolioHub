@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { USER_ENDPOINTS } from "../../../services/apiService";
@@ -6,8 +6,12 @@ import MainDetails from "./MainDetails";
 import OptionalDetails from "./OptionalDetails";
 import FilesDetails from "./FilesDetails";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
+import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 
 function AddProjectCard({ setShowAddProject }) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -19,6 +23,8 @@ function AddProjectCard({ setShowAddProject }) {
   };
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true); // Set loading state to true
+
     const formData = new FormData();
 
     formData.append("name", data.name);
@@ -52,35 +58,97 @@ function AddProjectCard({ setShowAddProject }) {
       console.log("Project added successfully:", response.data);
     } catch (error) {
       console.error("Error adding project:", error);
+    } finally {
+      setIsSubmitting(false); // Set loading state to false
     }
   };
 
+  const clickNextStep = () => {
+    setCurrentStep((prevStep) => Math.min(prevStep + 1, 3)); 
+  };
+
+  const clickPrevStep = () => {
+    setCurrentStep((prevStep) => Math.max(prevStep - 1, 1));
+  };
+
   return (
-    <div className="flex w-full h-full justify-center items-center">
-      <div className="flex flex-col w-1/2 h-5/6 m-10 border border-home-gold rounded-2xl items-center justify-center bg-gray-800 bg-opacity-75 shadow-lg transition-transform duration-300 ease-in-out hover:shadow-2xl transform hover:scale-105 p-6">
+    <div className="flex w-full h-full justify-center items-center my-5">
+      <div className="flex flex-col w-1/2 border-2 rounded-md items-center justify-center transform p-6 relative">
         <button
-          className="w-10 h-10 rounded-full border-2 absolute top-2 left-2"
+          className="w-10 h-10 rounded-full border-2 top-2 left-2 absolute text-button-red hover:bg-button-red hover:text-home-white transition-colors duration-300 ease-in-out"
           onClick={clickBackButton}
         >
-          <IoArrowBackCircleSharp className="w-full h-full text-home-gold" />
+          <IoArrowBackCircleSharp className="w-full h-full " />
         </button>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col  w-full"
+          className="flex flex-col w-full p-5 gap-5 h-[33rem] relative"
         >
-          {/* Carousel-like navigation */}
-          <MainDetails register={register} errors={errors} />
-          <OptionalDetails register={register} errors={errors} />
-          <FilesDetails register={register} />
+          {currentStep === 1 && (
+            <MainDetails register={register} errors={errors} />
+          )}
+          {currentStep === 2 && (
+            <OptionalDetails register={register} errors={errors} />
+          )}
+          {currentStep === 3 && <FilesDetails register={register} />}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="bg-home-gold text-white p-3 rounded-full transition-transform duration-300 ease-in-out transform hover:scale-110 active:scale-95 shadow-md"
-          >
-            Add Project
-          </button>
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              onClick={clickPrevStep}
+              disabled={currentStep === 1 || isSubmitting}
+              className="w-10 h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white disabled:bg-gray-400"
+            >
+              <GrFormPrevious />
+            </button>
+            {currentStep < 3 ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  clickNextStep();
+                }}
+                disabled={isSubmitting}
+                className="w-10 h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
+              >
+                <GrFormNext />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
+              >
+                {isSubmitting ? "Adding..." : "Add Project"}
+              </button>
+            )}
+          </div>
+
+          <div className="flex w-full justify-center gap-5 items-center mt-4 absolute bottom-4 ">
+            <div
+              className={`rounded-full w-3 h-3 border border-black ${
+                currentStep === 1 ? "bg-button-red" : ""
+              }`}
+            ></div>
+            <div
+              className={`rounded-full w-3 h-3 border border-black ${
+                currentStep === 2 ? "bg-button-red" : ""
+              }`}
+            ></div>
+            <div
+              className={`rounded-full w-3 h-3 border border-black ${
+                currentStep === 3 ? "bg-button-red" : ""
+              }`}
+            ></div>
+          </div>
         </form>
+
+        {/* Loading spinner */}
+        {isSubmitting && (
+          <div className="absolute inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-20">
+            <div className="w-16 h-16 border-4 border-t-4 border-t-button-red border-gray-300 rounded-full animate-spin"></div>
+          </div>
+        )}
       </div>
     </div>
   );

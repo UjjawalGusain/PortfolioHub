@@ -8,7 +8,6 @@ const projectSchema = new Schema({
     },
     repoId: {
         type: String, // Github API
-        required: true,
     },
     thumbnail: {
         type: String,
@@ -32,7 +31,6 @@ const projectSchema = new Schema({
     },
     domain: {
         type: String,
-        enum: ['Web Development', 'Android Development', 'Machine learning', 'Deep Learning', 'Blockchain', 'Cyber Security', 'IOT', 'Other'],
     },
     techStack: [
         {

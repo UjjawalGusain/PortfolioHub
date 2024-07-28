@@ -123,14 +123,13 @@ function Home() {
           <div className="my-5 flex gap-3">
           {userData.resume && (
               <button
-                className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red"
+                className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out"
                 onClick={handleShowResume}
               >
                 Show Resume <FaDownload className="relative top-1 ml-5" />
               </button>
             )}
 
-            {/*wvebvfohwdvohewvoho */}
             
             {userData && isUserAuthenticated && <AddResumeButton userData={userData} handleResumeUploaded={handleResumeUploaded} />}
           </div>

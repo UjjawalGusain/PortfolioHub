@@ -1,6 +1,7 @@
 import React from 'react'
 
 function Introduction({project}) {
+  console.log(project);
   return (
     <>
         <h2 className="text-3xl">Introduction</h2>

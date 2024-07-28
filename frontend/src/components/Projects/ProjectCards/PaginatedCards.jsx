@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import ProjectCards from "./ProjectCards";
 
-function PaginatedCards({ projectsPerPage, projects, handleAddProjectClick }) {
+function PaginatedCards({ projectsPerPage, projects, handleAddProjectClick, isUserAuthenticate }) {
   const [projectOffset, setProjectOffset] = useState(0);
 
   if (!projects) {
@@ -23,6 +23,7 @@ function PaginatedCards({ projectsPerPage, projects, handleAddProjectClick }) {
       <ProjectCards
         currentProjects={currentProjects}
         handleAddProjectClick={handleAddProjectClick}
+        isUserAuthenticate={isUserAuthenticate}
       />
       <ReactPaginate
         breakLabel="..."

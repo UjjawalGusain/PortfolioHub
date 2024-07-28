@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ConfirmationPopup from "../Projects/ProjectCards/ConfirmationPopup/ConfirmationPopup";
+import NoCertificationCard from "./NoCertification/NoCertificationCard";
 
 function Certifications() {
   const [addCertificationVisible, setAddCertificationVisible] = useState(false);
@@ -58,6 +59,7 @@ function Certifications() {
 
   const handleCertificateDelete = async () => {
     try {
+      console.log("Clicked");
       if (!selectedCert) {
         console.error("No certificate selected for deletion.");
         return;
@@ -111,6 +113,32 @@ function Certifications() {
 
   const isUserAuthenticated = username === authUsername;
 
+  if (certifications.length === 0) {
+    return (
+      <div>
+        {addCertificationVisible ? (
+          <AddCertification
+            setAddCertificationVisible={setAddCertificationVisible}
+          />
+        ) : (
+          <div>
+            <NoCertificationCard setAddCertificationVisible={setAddCertificationVisible} isUserAuthenticated={isUserAuthenticated}/>
+            {isUserAuthenticated && !addCertificationVisible && (
+              <button
+                type="submit"
+                className="absolute bottom-4 left-4 px-4 py-2 bg-button-red text-home-white rounded-lg hover:bg-home-white hover:text-button-red hover:border-button-red border-2 transition-colors duration-300 ease-in-out"
+                onClick={handleAddCertification}
+              >
+                Add New Certificate
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+
   return (
     <div className="my-8 w-full h-full flex flex-col md:flex-row justify-center items-start">
       {addCertificationVisible ? (
@@ -155,7 +183,7 @@ function Certifications() {
                 )}
                 {isUserAuthenticated && (
                   <button
-                    className="rounded text-black text-start text-3xl bg-red-500 hover:bg-home-white hover:border-red-500 border-2 px-3 py-1 absolute right-4 bottom-4"
+                    className="rounded text-black text-start text-3xl bg-red-500 hover:bg-home-white hover:border-red-500 border-2 px-3 py-1 absolute right-4 bottom-4 transition-colors duration-300 ease-in-out"
                     onClick={() => setIsPopupOpen(true)}
                   >
                     <MdOutlineDeleteOutline />
@@ -184,7 +212,7 @@ function Certifications() {
       {isUserAuthenticated && !addCertificationVisible && (
         <button
           type="submit"
-          className="absolute bottom-4 left-4 px-4 py-2 bg-button-red text-home-white rounded-lg hover:bg-home-white hover:text-button-red hover:border-button-red border-2"
+          className="absolute bottom-4 left-4 px-4 py-2 bg-button-red text-home-white rounded-lg hover:bg-home-white hover:text-button-red hover:border-button-red border-2 transition-colors duration-300 ease-in-out"
           onClick={handleAddCertification}
         >
           Add New Certificate
