@@ -1,40 +1,58 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import AddProjectCard from "./AddProjectDetails/AddProjectCard";
 import PaginatedCards from "./ProjectCards/PaginatedCards";
-import { USER_ENDPOINTS } from "../../services/apiService";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
-import {fetchUserData} from "../../redux/auth/authThunks.js"
+import { fetchUserData } from "../../redux/auth/authThunks.js";
+import { fetchProjects } from "../../redux/project/projectsThunks.js";
 
 export default function Projects() {
   const { username } = useParams();
   const [showAddProject, setShowAddProject] = useState(false);
-  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const authUserData = useSelector((state) => state.auth?.user);
   const authUsername = authUserData?.username || "";
 
-  const userData = useSelector((state) => state.profile?.profile);
+  const projects = useSelector((state) => state.projects?.projects);
+  
+  useEffect(() => {
+    const fetchProjectsFunc = async () => {
+      if (projects === null) {
+        setLoading(true)
+        try {
+          console.log("Here before dispatch");
+          await dispatch(fetchProjects(username)).unwrap();
+          setLoading(false)
+          console.log("Projects dispatched");
+        } catch (error) {
+          setLoading(false)
+          setError(true)
+          console.error("Error generated while dispatching projects: ", error);
+        }
+      } else {
+        console.log("Projects were already there");
+      }
+
+    };
+    fetchProjectsFunc()
+
+  }, [dispatch, projects, username]);
 
   useEffect(() => {
     const fetchAuthData = async () => {
-      // console.log("auth user: ", authUserData);
       if (!authUserData) {
         try {
           await dispatch(fetchUserData()).unwrap();
-          // console.log("Set Auth User Data");
         } catch (err) {
           console.error("Error fetching user data:", err);
           setError(err.message);
           setLoading(false);
         }
       } else {
-        // console.log("We already have user");
         setLoading(false);
       }
     };
@@ -46,27 +64,8 @@ export default function Projects() {
     setShowAddProject(true);
   };
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          USER_ENDPOINTS.FETCH_USER_PROJECTS.replace(":username", username)
-        );
-        console.log(response);
-        setProjects(response.data.data.projectObjects); 
-      } catch (error) {
-        setError("Error fetching projects.");
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchProjects();
-  }, [username]);
-
-  if (loading) {
+  if (loading || projects === undefined) {
     return <p>Loading...</p>;
   }
 
@@ -74,21 +73,25 @@ export default function Projects() {
     return <p className="text-red-500">{error}</p>;
   }
 
-  const isUserAuthenticate = authUsername === username
+  const isUserAuthenticate = authUsername === username;
 
   return (
     <div
       id="projects"
       className="h-full w-full bg-home-white flex flex-col items-center text-black relative p-5"
     >
-      {projects.length == 0 || showAddProject? (<></>) : (<h1 className="text-4xl font-bold text-text-blue w-3/5 text-left ">
-        Projects
-      </h1>)}
+      {!projects|| projects.length == 0 || showAddProject ? (
+        <></>
+      ) : (
+        <h1 className="text-4xl font-bold text-text-blue w-3/5 text-left ">
+          Projects
+        </h1>
+      )}
 
       <ScrollToTopButton />
 
       {showAddProject ? (
-        <AddProjectCard setShowAddProject={setShowAddProject}/>
+        <AddProjectCard setShowAddProject={setShowAddProject} />
       ) : (
         <PaginatedCards
           projectsPerPage={5}

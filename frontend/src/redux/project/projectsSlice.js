@@ -1,47 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { USER_ENDPOINTS } from "../../services/apiService";
+import { fetchProjects } from "./projectsThunks";
 
 const initialState = {
-  project: {
-    loading: false,
-    error: null,
-    projects: [],
-  },
+    projects: null,
+    isError: false,
+    isLoading: false,
 };
 
-const projectSlice = createSlice({
-  name: "project",
+const projectsSlice = createSlice({
+  name: "projects",
   initialState,
-  reducers: {
-    setProjectsStart: (state, action) => {
-        state.project.loading = true;
-        state.project.error = null;
-    },
-    setProjects: (state, action) => {
-        state.project.projects = action.payload;
-        state.project.loading = false;
-        state.project.error = null;
-    },
-    setError: (state, action) => {
-        state.project.projects = [];
-        state.project.loading = false;
-        state.project.error = action.payload;
-    }
-    }
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchProjects.pending, (state, action) => {
+        state.isLoading = true;
+    });
+
+    builder.addCase(fetchProjects.fulfilled, (state, action) => {
+        state.projects = action.payload;
+        state.isLoading = false;
+    })
+
+    builder.addCase(fetchProjects.rejected, (state, action) => {
+        console.error("Error while fetching projects: ", action.payload);
+        state.isLoading = false;
+        this.state.isError = true;
+    })
+  }
 });
 
-export const {setProjectsStart, setProjects, setError} = projectSlice.actions
-export default projectSlice.reducer
+export default projectsSlice.reducer
 
-export const fetchUserProjects = () => async(dispatch) => {
-    dispatch(setProjectsStart());
-    try {
-        const response = await axios.post(USER_ENDPOINTS.FETCH_USER_PROJECTS, {}, {
-            withCredentials: true,
-        })
-        dispatch(setProjects(response.data))
-    } catch (error) {
-        dispatch(setError(error.message || 'Failed to fetch user projects'));
-    }
-}
