@@ -323,6 +323,8 @@ const fetchUserData = asyncHandler(async (req, res) => {
       position,
       description,
     };
+    console.log("fetch user data called");
+
     return res.json(
       new ApiResponse(200, userValues, "User Data Successfully fetched")
     );
@@ -558,7 +560,7 @@ const fetchUserProjects = asyncHandler(async (req, res) => {
     const validProjects = projectObjects.filter((project) => project !== null);
 
     // console.log("Valid Projects: ", validProjects);
-
+    console.log("Projects fetched");
     return res.json(
       new ApiResponse(
         200,
@@ -614,7 +616,7 @@ const fetchProject = asyncHandler(async (req, res) => {
     };
 
     // const validProjects = projectObjects.filter((project) => project !== null);
-
+    console.log("Project fetched");
     return res.json(
       new ApiResponse(200, projectObject, "Project successfully fetched")
     );
@@ -748,7 +750,7 @@ const fetchCertifications = asyncHandler(async (req, res) => {
     const certificationIds = user.certifications;
 
     const certificates = await Certification.find({_id : { $in:  certificationIds}})
-
+    console.log("Ceertificates fetched");
     return res.json(
       new ApiResponse(200, certificates, "Certificates successfully fetched")
     );

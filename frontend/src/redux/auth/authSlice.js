@@ -3,7 +3,7 @@ import { fetchUserData, login, logout } from "./authThunks.js";
 
 const initialState = {
   user: null,
-  isLoading: false,
+  isLoading: false, 
   isError: false,
 };
 

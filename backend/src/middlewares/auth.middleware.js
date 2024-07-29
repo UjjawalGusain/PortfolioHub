@@ -6,7 +6,6 @@ import jwt from "jsonwebtoken";
 export const verifyTokens = asyncHandler(async (req, _, next) => {
   try {
     // Here we will get encoded token
-    console.log("req.cookies: ", req.cookies.accessToken);
 
     const token =
       req.cookies?.accessToken ||
