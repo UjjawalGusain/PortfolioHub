@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useEffect} from "react";
 import { FaDownload } from "react-icons/fa";
 import AddResumeButton from "./Buttons/AddResumeButton";
-import { fetchUserData } from "../../redux/auth/authThunks";
 import { fetchProfileData } from "../../redux/profile/profileThunks";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchGithub } from "../../redux/github/githubThunks";
+import useFetchAllData from "../../hooks/useFetchAllData";
 
 // What do I have to do?
 
@@ -22,74 +20,12 @@ import { fetchGithub } from "../../redux/github/githubThunks";
 // 2. Create a profile slice. It will be have a reducer which will be called when I want to refresh the profile data.
 
 function Home() {
-  const { username } = useParams();
-  const [error, setError] = useState(null);
-  const [githubLoading, setGithubLoading] = useState(false);
   const dispatch = useDispatch();
 
   const githubData = useSelector((state) => state.github?.githubData);
-
-  const [loading, setLoading] = useState(true);
-  const authUserData = useSelector((state) => state.auth?.user);
-  const authUsername = authUserData?.username || "";
-
   const userData = useSelector((state) => state.profile?.profile);
 
-
-  // Use Effect for fetching Authenticated User Data if not available in slice
-  useEffect(() => {
-    const fetchAuthData = async () => {
-      if (!authUserData) {
-        try {
-          await dispatch(fetchUserData()).unwrap();
-          setLoading(false);
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-          setError(err.message);
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    fetchAuthData();
-  }, [authUserData, dispatch]);
-
-  // Use Effect for fetching Profile Data(Unauthenticated user) if not available in slice
-  useEffect(() => {
-    const fetchProfileDataFunc = async () => {
-      if (!userData || userData.username !== username) {
-        try {
-          await dispatch(fetchProfileData(username)).unwrap();
-          setLoading(false);
-        } catch (err) {
-          console.error("Error fetching profile user data:", err);
-          setError(err.message);
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    fetchProfileDataFunc();
-  }, [userData, dispatch, username]);
-
-  // Use Effect for fetching Github Data of profile if not available in slice
-  useEffect(() => {
-    const asyncGithubFetchData = async () => {
-      if (!githubData) {
-        try {
-          await dispatch(fetchGithub(userData)).unwrap();
-          setGithubLoading(false);
-        } catch (error) {
-          console.error("Error dispatching fetch github: ", error);
-        }
-      } 
-    };
-    asyncGithubFetchData();
-  }, [githubData, username, userData]);
+  const { loading, githubLoading, error, isUserAuthenticated} = useFetchAllData()
 
   // Handling resume upload
   const handleResumeUploaded = async () => {
@@ -123,9 +59,8 @@ function Home() {
     );
   }
 
-  // If the profile opened is authenticated user(logged in user) on not
-  const isUserAuthenticated = username === authUsername;
 
+  
   return (
     <div className="h-full bg-home-white">
       <div className="px-16 flex">

@@ -1,65 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddProjectCard from "./AddProjectDetails/AddProjectCard";
 import PaginatedCards from "./ProjectCards/PaginatedCards";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
-import { fetchUserData } from "../../redux/auth/authThunks.js";
-import { fetchProjects } from "../../redux/project/projectsThunks.js";
+import useFetchAllData from "../../hooks/useFetchAllData.jsx";
 
 export default function Projects() {
-  const { username } = useParams();
   const [showAddProject, setShowAddProject] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const dispatch = useDispatch();
-
-  const authUserData = useSelector((state) => state.auth?.user);
-  const authUsername = authUserData?.username || "";
 
   const projects = useSelector((state) => state.projects?.projects);
   
-  useEffect(() => {
-    const fetchProjectsFunc = async () => {
-      if (projects === null) {
-        setLoading(true)
-        try {
-          console.log("Here before dispatch");
-          await dispatch(fetchProjects(username)).unwrap();
-          setLoading(false)
-          console.log("Projects dispatched");
-        } catch (error) {
-          setLoading(false)
-          setError(true)
-          console.error("Error generated while dispatching projects: ", error);
-        }
-      } else {
-        console.log("Projects were already there");
-      }
-
-    };
-    fetchProjectsFunc()
-
-  }, [dispatch, projects, username]);
-
-  useEffect(() => {
-    const fetchAuthData = async () => {
-      if (!authUserData) {
-        try {
-          await dispatch(fetchUserData()).unwrap();
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-          setError(err.message);
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    fetchAuthData();
-  }, [authUserData, dispatch]);
-
+  const { loading, error, isUserAuthenticated } = useFetchAllData()
+  
   const handleAddProjectClick = () => {
     setShowAddProject(true);
   };
@@ -73,7 +25,6 @@ export default function Projects() {
     return <p className="text-red-500">{error}</p>;
   }
 
-  const isUserAuthenticate = authUsername === username;
 
   return (
     <div
@@ -97,10 +48,10 @@ export default function Projects() {
           projectsPerPage={5}
           projects={projects}
           handleAddProjectClick={handleAddProjectClick}
-          isUserAuthenticate={isUserAuthenticate}
+          isUserAuthenticate={isUserAuthenticated}
         />
       )}
-      {isUserAuthenticate && !showAddProject ? (
+      {isUserAuthenticated && !showAddProject ? (
         <button
           className="fixed bottom-4 left-4 border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
           onClick={handleAddProjectClick}
