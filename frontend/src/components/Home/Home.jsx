@@ -25,7 +25,7 @@ function Home() {
   const githubData = useSelector((state) => state.github?.githubData);
   const userData = useSelector((state) => state.profile?.profile);
 
-  const { loading, githubLoading, error, isUserAuthenticated} = useFetchAllData()
+  const { loading, githubLoading, error, isUserAuthenticated, username} = useFetchAllData()
 
   // Handling resume upload
   const handleResumeUploaded = async () => {

@@ -3,6 +3,7 @@ import authReducer from "./auth/authSlice.js";
 import profileReducer from "./profile/profileSlice.js"
 import githubReducer from "./github/githubSlice.js"
 import projectsReducer from "./projects/projectsSlice.js"
+import certificatesReducer from "./certificates/certificatesSlice.js" 
 import { combineReducers } from "@reduxjs/toolkit";
 
 const rootReducer = combineReducers({
@@ -10,6 +11,7 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   projects: projectsReducer,
   github: githubReducer,
+  certificates: certificatesReducer,
 });
 
 const store = configureStore({

@@ -5,12 +5,20 @@ import { fetchProjects } from "../redux/projects/projectsThunks";
 import { fetchGithub } from "../redux/github/githubThunks";
 import { fetchUserData } from "../redux/auth/authThunks";
 import { fetchProfileData } from "../redux/profile/profileThunks";
+import { fetchCertificates } from "../redux/certificates/certificatesThunks";
 
 function useFetchAllData() {
   const { username } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [githubLoading, setGithubLoading] = useState(false);
+  const [fetchStatus, setFetchStatus] = useState({
+    // user: false,
+    profile: false,
+    github: false,
+    projects: false,
+    certificates: false
+  });
 
   const dispatch = useDispatch();
 
@@ -18,51 +26,128 @@ function useFetchAllData() {
   const projects = useSelector((state) => state.projects?.projects);
   const githubData = useSelector((state) => state.github?.githubData);
   const userData = useSelector((state) => state.profile?.profile);
+  const certificates = useSelector((state) => state.certificates?.certificates);
 
+  // Fetch user data
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setGithubLoading(true);
-
+    const fetchUser = async () => {
       try {
-
-        // Fetch GitHub data if not already present or if username has changed
-        if (!githubData || (userData && userData.username !== username)) {
-          console.log(userData.username, " ", username);
-          await dispatch(fetchGithub(userData)).unwrap();
-        }
-
-        // Fetch profile data if it doesn't match or is absent
-        if (!userData || userData.username !== username) {
-          await dispatch(fetchProfileData(username)).unwrap();
-        }
-
-        // Fetch projects if not already present
-        if (!projects) {
-          await dispatch(fetchProjects(username)).unwrap();
-        }
-
-        // Fetch user data if not already present
         if (!authUserData) {
+          console.log("Fetching user data");
           await dispatch(fetchUserData()).unwrap();
+          // setFetchStatus((prev) => ({ ...prev, user: true }));
         }
-
-       
-        
-
       } catch (err) {
         setError(err.message);
-        console.error("Error in data fetching: ", err);
-      } finally {
-        setLoading(false);
-        setGithubLoading(false);
+        console.error("Error fetching user data: ", err);
       }
     };
 
-    fetchData();
-  }, [dispatch, username, projects, authUserData, userData, githubData]);
+    fetchUser();
+  }, [dispatch, authUserData]);
 
-  const isUserAuthenticated = authUserData ? username === authUserData.username : false;
+  // Fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!userData || userData.username !== username) {
+        try {
+          console.log("Fetching profile data");
+          await dispatch(fetchProfileData(username)).unwrap();
+          setFetchStatus((prev) => ({ ...prev, profile: true }));
+        } catch (err) {
+          setError(err.message);
+          console.error("Error fetching profile data: ", err);
+        }
+      }
+    };
+
+    if (!fetchStatus.profile || username !== userData?.username) {
+      fetchProfile();
+    }
+  }, [dispatch, username, fetchStatus.profile]);
+
+  // Fetch GitHub data
+  useEffect(() => {
+    const fetchGithubData = async () => {
+      if (!githubData || (userData && userData.username !== username)) {
+        try {
+          console.log("Fetching GitHub data");
+          setGithubLoading(true);
+          await dispatch(fetchGithub(userData)).unwrap();
+          setFetchStatus((prev) => ({ ...prev, github: true }));
+        } catch (err) {
+          setError(err.message);
+          console.error("Error fetching GitHub data: ", err);
+        } finally {
+          setGithubLoading(false);
+        }
+      }
+    };
+
+    if (!fetchStatus.github) {
+      fetchGithubData();
+    }
+  }, [dispatch, userData, fetchStatus.github]);
+
+  // Fetch projects
+  useEffect(() => {
+    const fetchProjectsData = async () => {
+      if (!projects) {
+        try {
+          console.log("Fetching projects data");
+          await dispatch(fetchProjects(username)).unwrap();
+          setFetchStatus((prev) => ({ ...prev, projects: true }));
+        } catch (err) {
+          setError(err.message);
+          console.error("Error fetching projects data: ", err);
+        }
+      }
+    };
+
+    if (!fetchStatus.projects) {
+      fetchProjectsData();
+    }
+  }, [dispatch, username, projects, fetchStatus.projects]);
+
+  // Fetch certificates
+  useEffect(() => {
+    const fetchCertificatesData = async () => {
+      if (!certificates) {
+        try {
+          console.log("Fetching certificates data");
+          await dispatch(fetchCertificates(username)).unwrap();
+          setFetchStatus((prev) => ({ ...prev, certificates: true }));
+        } catch (err) {
+          setError(err.message);
+          console.error("Error fetching certificates: ", err);
+        }
+      }
+    };
+
+    if (!fetchStatus.certificates) {
+      fetchCertificatesData();
+    }
+  }, [dispatch, username, certificates, fetchStatus.certificates]);
+
+  // Check if all data has been fetched
+  useEffect(() => {
+    if (
+      // fetchStatus.user &&
+      fetchStatus.profile &&
+      fetchStatus.github &&
+      fetchStatus.projects &&
+      fetchStatus.certificates
+    ) {
+      console.log("Should be false");
+      setLoading(false);
+    }
+  }, [fetchStatus]);
+
+  // Check if user is authenticated
+  const isUserAuthenticated = authUserData
+    ? username === authUserData.username
+    : false;
+
   return { loading, githubLoading, error, isUserAuthenticated, username };
 }
 

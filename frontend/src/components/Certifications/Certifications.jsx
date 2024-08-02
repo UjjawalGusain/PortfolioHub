@@ -1,72 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddCertification from "./AddCertification/AddCertification";
 import { USER_ENDPOINTS } from "../../services/apiService";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import ConfirmationPopup from "../Projects/ProjectCards/ConfirmationPopup/ConfirmationPopup";
 import NoCertificationCard from "./NoCertification/NoCertificationCard";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserData } from "../../redux/auth/authThunks";
+import useFetchAllData from "../../hooks/useFetchAllData";
+import { useSelector } from "react-redux";
 
 function Certifications() {
   const [addCertificationVisible, setAddCertificationVisible] = useState(false);
-  const [certifications, setCertifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [hoveredCert, setHoveredCert] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const dispatch = useDispatch()
+  const [hoveredCert, setHoveredCert] = useState(null);
 
-
-  const authUserData = useSelector((state) => state.auth?.user);
-  const authUsername = authUserData?.username || "";
-
-  const userData = useSelector((state) => state.profile?.profile);
-
-  useEffect(() => {
-    const fetchAuthData = async () => {
-      if (!authUserData) {
-        try {
-          await dispatch(fetchUserData()).unwrap();
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-          setError(err.message);
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    fetchAuthData();
-  }, [authUserData, dispatch]);
-
-
+  const { loading, error, isUserAuthenticated, username } = useFetchAllData();
+  const certifications = useSelector((state) => state.certificates?.certificates);
 
   const handleAddCertification = () => {
     setAddCertificationVisible(true);
   };
 
-  const handleCertHover = (cert) => {
-    setHoveredCert(cert);
-  };
-
-  const handleCertLeave = () => {
-    if (!selectedCert) {
-      setHoveredCert(null);
-    }
-  };
-
   const handleCertClick = (cert) => {
     setSelectedCert(cert);
-    setHoveredCert(null);
   };
 
   const handleCertificateDelete = async () => {
     try {
-      console.log("Clicked");
       if (!selectedCert) {
         console.error("No certificate selected for deletion.");
         return;
@@ -76,37 +36,12 @@ function Certifications() {
         certificationId: selectedCert._id,
       });
 
-      setCertifications(
-        certifications.filter((cert) => cert._id !== selectedCert._id)
-      );
       setSelectedCert(null);
     } catch (error) {
       console.error("Error deleting certification:", error);
       setError("Error deleting certification.");
     }
   };
-
-  const { username } = useParams();
-
-  useEffect(() => {
-    const fetchCertifications = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          USER_ENDPOINTS.FETCH_CERTIFICATIONS.replace(":username", username)
-        );
-        console.log(response);
-        setCertifications(response.data.data);
-      } catch (error) {
-        setError("Error fetching certifications.");
-        console.error("Error fetching certifications:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCertifications();
-  }, [username]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -116,23 +51,19 @@ function Certifications() {
     return <p className="text-red-500">{error}</p>;
   }
 
-  const displayCert = hoveredCert || selectedCert;
+  const displayCert = selectedCert || hoveredCert;
 
-  const isUserAuthenticated = username === authUsername;
-
-  if (certifications.length === 0) {
+  if (certifications && certifications.length === 0) {
     return (
       <div>
         {addCertificationVisible ? (
-          <AddCertification
-            setAddCertificationVisible={setAddCertificationVisible}
-          />
+          <AddCertification setAddCertificationVisible={setAddCertificationVisible} />
         ) : (
           <div>
-            <NoCertificationCard setAddCertificationVisible={setAddCertificationVisible} isUserAuthenticated={isUserAuthenticated}/>
+            <NoCertificationCard setAddCertificationVisible={setAddCertificationVisible} isUserAuthenticated={isUserAuthenticated} />
             {isUserAuthenticated && !addCertificationVisible && (
               <button
-                type="submit"
+                type="button"
                 className="absolute bottom-4 left-4 px-4 py-2 bg-button-red text-home-white rounded-lg hover:bg-home-white hover:text-button-red hover:border-button-red border-2 transition-colors duration-300 ease-in-out"
                 onClick={handleAddCertification}
               >
@@ -144,29 +75,22 @@ function Certifications() {
       </div>
     );
   }
-  
 
   return (
     <div className="my-8 w-full h-full flex flex-col md:flex-row justify-center items-start">
       {addCertificationVisible ? (
-        <AddCertification
-          setAddCertificationVisible={setAddCertificationVisible}
-        />
+        <AddCertification setAddCertificationVisible={setAddCertificationVisible} />
       ) : (
-        <div
-          className={`h-full w-1/2 border-2 border-gray-300 flex flex-col md:flex-row rounded-lg shadow-lg transition-all duration-300`}
-        >
+        <div className={`h-full w-1/2 border-2 border-gray-300 flex flex-col md:flex-row rounded-lg shadow-lg transition-all duration-300`}>
           <div className="w-1/2 flex flex-col gap-6 p-6 bg-gray-100 border-r border-gray-300">
-            <h1 className="text-4xl font-bold text-text-blue mb-4">
-              Certifications
-            </h1>
-            {certifications.map((cert) => (
+            <h1 className="text-4xl font-bold text-text-blue mb-4">Certifications</h1>
+            {certifications && certifications.map((cert) => (
               <button
                 key={cert._id}
-                className="w-full text-left p-2 text-base bg-gray-100 shadow-gray-100 shadow-md rounded-lg mb-2 font-semibold text-text-blue hover:bg-gray-200 hover:text-button-red transition-colors duration-300"
-                onMouseEnter={() => handleCertHover(cert)}
-                onMouseLeave={handleCertLeave}
+                className={`w-full text-left p-2 text-base bg-gray-100 shadow-gray-100 shadow-md rounded-lg mb-2 font-semibold text-text-blue transition-colors duration-300 ease-in-out ${selectedCert === cert || hoveredCert === cert ? 'bg-gray-200 text-button-red' : ''}`}
                 onClick={() => handleCertClick(cert)}
+                onMouseEnter={() => setHoveredCert(cert)}
+                onMouseLeave={() => setHoveredCert(null)}
               >
                 {cert.title}
               </button>
@@ -175,12 +99,8 @@ function Certifications() {
           <div className="w-full flex flex-col p-6 bg-home-white relative">
             {displayCert ? (
               <div className="flex flex-col">
-                <h2 className="text-3xl font-semibold text-text-blue">
-                  {displayCert.title}
-                </h2>
-                <p className="text-gray-700 mt-3 text-lg">
-                  {displayCert.description}
-                </p>
+                <h2 className="text-3xl font-semibold text-text-blue">{displayCert.title}</h2>
+                <p className="text-gray-700 mt-3 text-lg">{displayCert.description}</p>
                 {displayCert.certificateImg && (
                   <img
                     src={displayCert.certificateImg}
@@ -199,7 +119,7 @@ function Certifications() {
               </div>
             ) : (
               <p className="text-gray-500 text-lg flex justify-center items-center w-full h-full">
-                Hover over or click on a title to see details
+                Click on a title to see details
               </p>
             )}
           </div>
@@ -209,7 +129,7 @@ function Certifications() {
       <ConfirmationPopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
-        deleteObject={"certificate"}
+        deleteObject="certificate"
         onConfirm={() => {
           handleCertificateDelete();
           setIsPopupOpen(false);
@@ -218,7 +138,7 @@ function Certifications() {
 
       {isUserAuthenticated && !addCertificationVisible && (
         <button
-          type="submit"
+          type="button"
           className="absolute bottom-4 left-4 px-4 py-2 bg-button-red text-home-white rounded-lg hover:bg-home-white hover:text-button-red hover:border-button-red border-2 transition-colors duration-300 ease-in-out"
           onClick={handleAddCertification}
         >
