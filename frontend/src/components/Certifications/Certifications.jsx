@@ -16,6 +16,7 @@ function Certifications() {
 
   const { loading, error, isUserAuthenticated, username } = useFetchAllData();
   const certifications = useSelector((state) => state.certificates?.certificates);
+  
 
   const handleAddCertification = () => {
     setAddCertificationVisible(true);

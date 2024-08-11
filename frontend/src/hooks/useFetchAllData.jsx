@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../redux/projects/projectsThunks";
@@ -9,15 +9,16 @@ import { fetchCertificates } from "../redux/certificates/certificatesThunks";
 
 function useFetchAllData() {
   const { username } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const [loading, setLoading] = useState(true);
   const [githubLoading, setGithubLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [fetchStatus, setFetchStatus] = useState({
-    // user: false,
+    user: false,
     profile: false,
     github: false,
     projects: false,
-    certificates: false
+    certificates: false,
   });
 
   const dispatch = useDispatch();
@@ -28,40 +29,58 @@ function useFetchAllData() {
   const userData = useSelector((state) => state.profile?.profile);
   const certificates = useSelector((state) => state.certificates?.certificates);
 
+  // Ref to store previous username
+  const prevUsernameRef = useRef(username);
+
+  // Reset fetchStatus when username changes
+  useEffect(() => {
+    if (fetchStatus.profile && fetchStatus.github && fetchStatus.projects && fetchStatus.certificates) {      
+      setFetchStatus({
+        user: fetchStatus.user, 
+        profile: false,
+        github: false,
+        projects: false,
+        certificates: false,
+      });
+      prevUsernameRef.current = username;
+    }
+  }, [username, fetchStatus]);
+
+
   // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (!authUserData) {
           console.log("Fetching user data");
           await dispatch(fetchUserData()).unwrap();
-          // setFetchStatus((prev) => ({ ...prev, user: true }));
-        }
+          setFetchStatus((prev) => ({ ...prev, user: true }));
       } catch (err) {
         setError(err.message);
         console.error("Error fetching user data: ", err);
       }
     };
 
-    fetchUser();
+    if (!authUserData) {
+      fetchUser();
+    }
+    
   }, [dispatch, authUserData]);
 
   // Fetch profile data
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!userData || userData.username !== username) {
-        try {
-          console.log("Fetching profile data");
-          await dispatch(fetchProfileData(username)).unwrap();
-          setFetchStatus((prev) => ({ ...prev, profile: true }));
-        } catch (err) {
-          setError(err.message);
-          console.error("Error fetching profile data: ", err);
-        }
+      try {
+        console.log("Fetching profile data");
+        await dispatch(fetchProfileData(username)).unwrap();
+        setFetchStatus((prev) => ({ ...prev, profile: true }));
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching profile data: ", err);
       }
-    };
-
-    if (!fetchStatus.profile || username !== userData?.username) {
+    };    
+    
+  
+    if (username !== prevUsernameRef.current || !userData) {
       fetchProfile();
     }
   }, [dispatch, username, fetchStatus.profile]);
@@ -69,7 +88,6 @@ function useFetchAllData() {
   // Fetch GitHub data
   useEffect(() => {
     const fetchGithubData = async () => {
-      if (!githubData || (userData && userData.username !== username)) {
         try {
           console.log("Fetching GitHub data");
           setGithubLoading(true);
@@ -81,66 +99,52 @@ function useFetchAllData() {
         } finally {
           setGithubLoading(false);
         }
-      }
     };
 
-    if (!fetchStatus.github) {
+    if (fetchStatus.profile && (username !== prevUsernameRef.current || !githubData)) {
       fetchGithubData();
     }
-  }, [dispatch, userData, fetchStatus.github]);
+  }, [dispatch, username, fetchStatus.profile]);
 
   // Fetch projects
   useEffect(() => {
     const fetchProjectsData = async () => {
-      if (!projects) {
-        try {
-          console.log("Fetching projects data");
-          await dispatch(fetchProjects(username)).unwrap();
-          setFetchStatus((prev) => ({ ...prev, projects: true }));
-        } catch (err) {
-          setError(err.message);
-          console.error("Error fetching projects data: ", err);
-        }
+      try {
+        console.log("Fetching projects data");
+        await dispatch(fetchProjects(username)).unwrap();
+        setFetchStatus((prev) => ({ ...prev, projects: true }));
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching projects data: ", err);
       }
     };
 
-    if (!fetchStatus.projects) {
+    if (username !== prevUsernameRef.current || !projects) {
       fetchProjectsData();
     }
-  }, [dispatch, username, projects, fetchStatus.projects]);
+  }, [dispatch, username, fetchStatus.projects]);
 
   // Fetch certificates
   useEffect(() => {
     const fetchCertificatesData = async () => {
-      if (!certificates) {
-        try {
-          console.log("Fetching certificates data");
-          await dispatch(fetchCertificates(username)).unwrap();
-          setFetchStatus((prev) => ({ ...prev, certificates: true }));
-        } catch (err) {
-          setError(err.message);
-          console.error("Error fetching certificates: ", err);
-        }
+      try {
+        console.log("Fetching certificates data");
+        await dispatch(fetchCertificates(username)).unwrap();
+        setFetchStatus((prev) => ({ ...prev, certificates: true }));
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching certificates: ", err);
       }
     };
 
-    if (!fetchStatus.certificates) {
+    if (username !== prevUsernameRef.current || !certificates) {
       fetchCertificatesData();
     }
-  }, [dispatch, username, certificates, fetchStatus.certificates]);
+  }, [dispatch, username, fetchStatus.certificates]);
 
   // Check if all data has been fetched
   useEffect(() => {
-    if (
-      // fetchStatus.user &&
-      fetchStatus.profile &&
-      fetchStatus.github &&
-      fetchStatus.projects &&
-      fetchStatus.certificates
-    ) {
-      console.log("Should be false");
-      setLoading(false);
-    }
+    setLoading(false);
   }, [fetchStatus]);
 
   // Check if user is authenticated
@@ -152,3 +156,4 @@ function useFetchAllData() {
 }
 
 export default useFetchAllData;
+  

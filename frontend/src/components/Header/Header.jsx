@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { USER_ENDPOINTS } from "../../services/apiService";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import SearchButton from "./SearchButton/SearchButton";
 import { useDispatch } from "react-redux";
@@ -16,6 +16,7 @@ function Header() {
   const pathUsername = username;
   const [authUsername, setAuthUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  const location = useLocation()
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -146,7 +147,10 @@ function Header() {
           <>
             <button
               className="text-black font-sans font-medium gap-5 text-lg hover:underline"
-              onClick={() => navigate(`/user/${authUsername}/home`)}
+              onClick={() => {
+                const currentPath = location.pathname.split('/').slice(3).join('/');
+                navigate(`/user/${authUsername}/${currentPath}`, { replace: true });
+              }}
             >
               <p className="font-sans">Go Back Home!</p>
             </button>

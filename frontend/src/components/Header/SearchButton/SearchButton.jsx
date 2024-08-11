@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import { USER_ENDPOINTS } from "../../../services/apiService";
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SearchButton = () => {
   const [query, setQuery] = useState("");
@@ -11,10 +11,15 @@ const SearchButton = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const ref = useRef(null);
 
+
+
   const handleClickUser = (username) => {
-    navigate(`/user/${username}/home`);
+    // navigate(`/user/${username}/home`);
+    const currentPath = location.pathname.split('/').slice(3).join('/');
+    navigate(`/user/${username}/${currentPath}`, { replace: true });
     setShowDropdown(false); // Hide dropdown when user is selected
   };
 
