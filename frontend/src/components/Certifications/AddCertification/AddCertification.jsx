@@ -13,12 +13,12 @@ function AddCertification({ setAddCertificationVisible }) {
     formState: { errors },
   } = useForm();
 
-  const handlebackButton = () => {
+  const handleBackButton = () => {
     setAddCertificationVisible(false);
   };
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true); 
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append("title", data.title);
@@ -41,12 +41,12 @@ function AddCertification({ setAddCertificationVisible }) {
   };
 
   return (
-    <div className="flex justify-center items-center h-full w-full bg-home-white p-10">
-      <div className="w-1/3 p-8 rounded-lg shadow-lg relative">
-        <h1 className="text-3xl font-semibold text-text-blue mb-6 text-center">
+    <div className="flex justify-center items-center h-full w-full bg-home-white p-4 md:p-10">
+      <div className="w-full md:w-1/2 lg:w-1/3 p-6 md:p-8 rounded-lg shadow-lg relative">
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-blue mb-6 text-center">
           Add Certification
         </h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
           <div>
             <label className="block text-home-black mb-2" htmlFor="title">
               Title
@@ -112,20 +112,20 @@ function AddCertification({ setAddCertificationVisible }) {
           </button>
         </form>
         <button
-          className="w-10 h-10 rounded-full border-2 top-2 left-2 absolute text-button-red hover:bg-button-red hover:text-home-white transition-colors duration-300 ease-in-out"
-          onClick={handlebackButton}
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 top-2 left-2 absolute text-button-red hover:bg-button-red hover:text-home-white transition-colors duration-300 ease-in-out"
+          onClick={handleBackButton}
         >
-          <IoArrowBackCircleSharp className="w-full h-full " />
+          <IoArrowBackCircleSharp className="w-full h-full" />
         </button>
 
         {/* Loading spinner */}
         {isSubmitting && (
           <div className="absolute inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-20">
-            <div className="w-16 h-16 border-4 border-t-4 border-t-button-red border-gray-300 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-t-4 border-t-button-red border-gray-300 rounded-full animate-spin"></div>
           </div>
         )}
       </div>
-    </div> 
+    </div>
   );
 }
 
