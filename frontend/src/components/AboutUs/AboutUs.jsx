@@ -28,11 +28,11 @@ function AboutUs() {
   const nImg = "/software-eng.jpg";
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full px-4 md:px-0">
       <div className="h-full flex flex-col items-center justify-center gap-10 pb-28">
-        <div className="w-3/5 flex flex-col items-center justify-center m-10 gap-10">
-          <h1 className="text-5xl text-balance text-center font-medium text-gray-800">
-            We help you share your Art - So you can focus on creating it !
+        <div className="w-full max-w-5xl flex flex-col items-center justify-center my-10 gap-10">
+          <h1 className="text-3xl md:text-5xl text-balance text-center font-medium text-gray-800">
+            We help you share your Art - So you can focus on creating it!
           </h1>
           <p className="font-light text-center">
             PortfolioHub helps you create and maintain your custom portfolio,
@@ -40,7 +40,7 @@ function AboutUs() {
           </p>
         </div>
 
-        <div className="w-4/5 flex flex-col gap-20">
+        <div className="w-full max-w-5xl flex flex-col gap-20">
           <Paragraph
             heading={mHeading}
             para1={m1}
@@ -64,16 +64,18 @@ function AboutUs() {
           />
         </div>
 
-        <hr className="border-t-2 border-gray-300 my-4 w-1/2" />
+        <hr className="border-t-2 border-gray-300 my-4 w-full max-w-4xl" />
 
-        <h1 className="text-4xl font-medium text-gray-700 mb-4">Creators</h1>
+        <h1 className="text-2xl md:text-4xl font-medium text-gray-700 mb-4">
+          Creators
+        </h1>
         <div className="flex flex-col justify-center items-center gap-3 font-thin">
           <img
             src="/ujjawal-gusain-img.png"
             alt="my-img"
-            className="rounded-full shadow-button-red shadow-md w-40 h-40 object-cover"
+            className="rounded-full shadow-button-red shadow-md w-32 h-32 md:w-40 md:h-40 object-cover"
           />
-          <h1>Ujjawal Gusain</h1>
+          <h1 className="text-lg md:text-xl">Ujjawal Gusain</h1>
         </div>
       </div>
       <Footer />
