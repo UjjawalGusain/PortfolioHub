@@ -7,7 +7,7 @@ const settingsRouter = Router()
 
 
 // Secured Routes
-
+ 
 settingsRouter.route("/change-user-settings").post(
     verifyTokens,
     upload.fields([

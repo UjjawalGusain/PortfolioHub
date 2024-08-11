@@ -45,9 +45,9 @@ const changeUserSettings = asyncHandler(async (req, res) => {
         const user = req.user;
         if (!user) {
             throw new ApiError(404, "User not found");
-        }
+        } 
 
-        const { username, fullname } = req.body;
+        const { username, fullname, position, description } = req.body;
         let profilePicUrl = "";
         let coverImgUrl = "";
 
@@ -76,7 +76,7 @@ const changeUserSettings = asyncHandler(async (req, res) => {
         if (description) userDoc.description = description;
 
         await userDoc.save();
-        return res.status(200).json(new ApiResponse(200, {}, "User settings changed successfully"));
+        return res.status(200).json(new ApiResponse(200, userDoc, "User settings changed successfully"));
     } catch (error) {
         console.error('Error changing settings:', error);
         if (error instanceof ApiError) {

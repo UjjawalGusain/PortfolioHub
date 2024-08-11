@@ -22,5 +22,12 @@ const PROFILE_ENDPOINTS = {
   FETCH_USER_PROFILE: `/api/v1/profiles/:username`
 }
 
+const SETTINGS_ENDPOINTS = {
+  CHANGE_PASSWORD: `/api/v1/settings/change-password`, //post
+  CHANGE_USER_SETTINGS: `/api/v1/settings/change-user-settings` //post
+}
 
-export { USER_ENDPOINTS, PROFILE_ENDPOINTS };
+
+
+
+export { USER_ENDPOINTS, PROFILE_ENDPOINTS, SETTINGS_ENDPOINTS };

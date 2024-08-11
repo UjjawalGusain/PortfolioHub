@@ -125,7 +125,7 @@ function AddCertification({ setAddCertificationVisible }) {
           </div>
         )}
       </div>
-    </div>
+    </div> 
   );
 }
 

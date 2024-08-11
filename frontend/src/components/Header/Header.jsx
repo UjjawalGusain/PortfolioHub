@@ -6,17 +6,23 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import SearchButton from "./SearchButton/SearchButton";
-import { useDispatch } from "react-redux";
 import { logout } from "../../redux/auth/authThunks";
+import { IoMdSettings } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import useFetchAllData from "../../hooks/useFetchAllData";
 
 function Header() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const { username } = useParams();
-  const pathUsername = username;
+  const dispatch = useDispatch();
   const [authUsername, setAuthUsername] = useState("");
-  const [loading, setLoading] = useState(true);
-  const location = useLocation()
+  const location = useLocation();
+
+  const {isUserAuthenticated, username} = useFetchAllData()
+
+  const handleSettingsClick = () => {
+    console.log("Works username: ", username);
+    navigate(`/user/${username}/settings`)
+  };
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -24,32 +30,29 @@ function Header() {
         const response = await axios.post(
           USER_ENDPOINTS.FETCH_USER_DATA,
           {},
-          {
+          { 
             withCredentials: true,
           }
         );
         setAuthUsername(response.data.data.username);
       } catch (error) {
         console.error("Error fetching username:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchUsername();
   }, []);
 
   const clickLogout = async () => {
-    try {  
-      dispatch(logout())
+    try {
+      dispatch(logout());
       navigate("/login");
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
 
-  const isUserProfile = authUsername === pathUsername;
   return (
-    <div className="h-20 flex bg-home-white sticky top-0 pr-10 z-20 border-none">
+    <div className="h-20 flex bg-home-white sticky top-0 z-20 border-none">
       <div className="w-1/3 flex text-black">
         <div className="ml-4 w-1/6 flex items-center justify-center ">
           <Link to={`/user/${authUsername}/home`}>
@@ -61,7 +64,7 @@ function Header() {
         <ul className="flex justify-end items-center text-black font-sans font-medium gap-5 text-lg">
           <li>
             <NavLink
-              to={`/user/${pathUsername}/home`}
+              to={`/user/${username}/home`}
               className={({ isActive }) =>
                 (isActive ? "text-button-red " : " ") + "hover:underline"
               }
@@ -71,7 +74,7 @@ function Header() {
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/projects`}
+              to={`/user/${username}/projects`}
               className={({ isActive }) =>
                 (isActive ? "text-button-red " : " ") + "hover:underline"
               }
@@ -81,7 +84,7 @@ function Header() {
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/contact`}
+              to={`/user/${username}/contact`}
               className={({ isActive }) =>
                 (isActive ? "text-button-red " : " ") + "hover:underline"
               }
@@ -91,7 +94,7 @@ function Header() {
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/certifications`}
+              to={`/user/${username}/certifications`}
               className={({ isActive }) =>
                 (isActive ? "text-button-red " : " ") + "hover:underline"
               }
@@ -101,7 +104,7 @@ function Header() {
           </li>
           <li>
             <NavLink
-              to={`/user/${pathUsername}/about-us`}
+              to={`/user/${username}/about-us`}
               className={({ isActive }) =>
                 (isActive ? "text-button-red " : " ") + "hover:underline"
               }
@@ -130,10 +133,10 @@ function Header() {
               </button>
             </div>
           </>
-        ) : isUserProfile ? (
+        ) : isUserAuthenticated ? (
           <>
             <div className="flex gap-10">
-              <SearchButton/>
+              <SearchButton />
 
               <button
                 className="text-black font-sans font-medium gap-5 text-lg hover:underline"
@@ -148,8 +151,13 @@ function Header() {
             <button
               className="text-black font-sans font-medium gap-5 text-lg hover:underline"
               onClick={() => {
-                const currentPath = location.pathname.split('/').slice(3).join('/');
-                navigate(`/user/${authUsername}/${currentPath}`, { replace: true });
+                const currentPath = location.pathname
+                  .split("/")
+                  .slice(3)
+                  .join("/");
+                navigate(`/user/${authUsername}/${currentPath}`, {
+                  replace: true,
+                });
               }}
             >
               <p className="font-sans">Go Back Home!</p>
@@ -157,7 +165,17 @@ function Header() {
           </>
         )}
       </div>
-      
+      {isUserAuthenticated ? (
+        <div className="w-[5%] flex">
+          <div className="flex justify-center items-center w-full">
+            <button onClick={handleSettingsClick}>
+              <IoMdSettings className="text-4xl" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

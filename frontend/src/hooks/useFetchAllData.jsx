@@ -51,7 +51,6 @@ function useFetchAllData() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-          console.log("Fetching user data");
           await dispatch(fetchUserData()).unwrap();
           setFetchStatus((prev) => ({ ...prev, user: true }));
       } catch (err) {
@@ -70,7 +69,6 @@ function useFetchAllData() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        console.log("Fetching profile data");
         await dispatch(fetchProfileData(username)).unwrap();
         setFetchStatus((prev) => ({ ...prev, profile: true }));
       } catch (err) {
@@ -89,7 +87,6 @@ function useFetchAllData() {
   useEffect(() => {
     const fetchGithubData = async () => {
         try {
-          console.log("Fetching GitHub data");
           setGithubLoading(true);
           await dispatch(fetchGithub(userData)).unwrap();
           setFetchStatus((prev) => ({ ...prev, github: true }));
@@ -110,7 +107,6 @@ function useFetchAllData() {
   useEffect(() => {
     const fetchProjectsData = async () => {
       try {
-        console.log("Fetching projects data");
         await dispatch(fetchProjects(username)).unwrap();
         setFetchStatus((prev) => ({ ...prev, projects: true }));
       } catch (err) {
@@ -128,7 +124,6 @@ function useFetchAllData() {
   useEffect(() => {
     const fetchCertificatesData = async () => {
       try {
-        console.log("Fetching certificates data");
         await dispatch(fetchCertificates(username)).unwrap();
         setFetchStatus((prev) => ({ ...prev, certificates: true }));
       } catch (err) {
