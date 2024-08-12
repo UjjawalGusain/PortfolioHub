@@ -72,17 +72,17 @@ function AddProjectCard({ setShowAddProject }) {
   };
 
   return (
-    <div className="flex w-full h-full justify-center items-center my-5">
-      <div className="flex flex-col w-1/2 border-2 rounded-md items-center justify-center transform p-6 relative">
+    <div className="flex w-full h-full justify-center items-center my-5 px-4">
+      <div className="flex flex-col w-full max-w-md border-2 rounded-md items-center justify-center transform p-6 relative">
         <button
-          className="w-10 h-10 rounded-full border-2 top-2 left-2 absolute text-button-red hover:bg-button-red hover:text-home-white transition-colors duration-300 ease-in-out"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 top-2 left-2 absolute text-button-red hover:bg-button-red hover:text-home-white transition-colors duration-300 ease-in-out"
           onClick={clickBackButton}
         >
           <IoArrowBackCircleSharp className="w-full h-full " />
         </button>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col w-full p-5 gap-5 h-[33rem] relative"
+          className="flex flex-col w-full p-5 gap-5 h-[33rem] md:h-[36rem] relative"
         >
           {currentStep === 1 && (
             <MainDetails register={register} errors={errors} />
@@ -97,7 +97,7 @@ function AddProjectCard({ setShowAddProject }) {
               type="button"
               onClick={clickPrevStep}
               disabled={currentStep === 1 || isSubmitting}
-              className="w-10 h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white disabled:bg-gray-400"
+              className="w-8 h-8 md:w-10 md:h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white disabled:bg-gray-400"
             >
               <GrFormPrevious />
             </button>
@@ -109,7 +109,7 @@ function AddProjectCard({ setShowAddProject }) {
                   clickNextStep();
                 }}
                 disabled={isSubmitting}
-                className="w-10 h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
+                className="w-8 h-8 md:w-10 md:h-10 flex justify-center items-center border-2 rounded-full bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
               >
                 <GrFormNext />
               </button>
@@ -117,26 +117,26 @@ function AddProjectCard({ setShowAddProject }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="border-2 rounded px-5 py-2 bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
+                className="border-2 rounded px-4 py-2 md:px-5 md:py-2 bg-button-red hover:bg-home-white hover:text-button-red hover:border-button-red z-30 transition-colors duration-300 ease-in-out text-home-white"
               >
                 {isSubmitting ? "Adding..." : "Add Project"}
               </button>
             )}
           </div>
 
-          <div className="flex w-full justify-center gap-5 items-center mt-4 absolute bottom-4 ">
+          <div className="flex w-full justify-center gap-3 md:gap-5 items-center mt-4 absolute bottom-4 ">
             <div
-              className={`rounded-full w-3 h-3 border border-black ${
+              className={`rounded-full w-2 h-2 md:w-3 md:h-3 border border-black ${
                 currentStep === 1 ? "bg-button-red" : ""
               }`}
             ></div>
             <div
-              className={`rounded-full w-3 h-3 border border-black ${
+              className={`rounded-full w-2 h-2 md:w-3 md:h-3 border border-black ${
                 currentStep === 2 ? "bg-button-red" : ""
               }`}
             ></div>
             <div
-              className={`rounded-full w-3 h-3 border border-black ${
+              className={`rounded-full w-2 h-2 md:w-3 md:h-3 border border-black ${
                 currentStep === 3 ? "bg-button-red" : ""
               }`}
             ></div>
@@ -146,7 +146,7 @@ function AddProjectCard({ setShowAddProject }) {
         {/* Loading spinner */}
         {isSubmitting && (
           <div className="absolute inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-20">
-            <div className="w-16 h-16 border-4 border-t-4 border-t-button-red border-gray-300 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 md:w-16 md:h-16 border-4 border-t-4 border-t-button-red border-gray-300 rounded-full animate-spin"></div>
           </div>
         )}
       </div>

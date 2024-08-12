@@ -15,7 +15,7 @@ const FilesDetails = ({ register }) => (
           type="file"
           multiple
           {...register("videos")}
-          className="w-full px-3 py-2 shadow-sm border-2 shadow-text-blue rounded-lg focus:outline-none focus:border-text-blue"
+          className="w-full px-3 py-2 shadow-text-blue rounded-lg focus:outline-none focus:border-text-blue"
         />
       </div>
 
@@ -28,7 +28,7 @@ const FilesDetails = ({ register }) => (
           type="file"
           multiple
           {...register("images")}
-          className="w-full px-3 py-2 shadow-sm border-2 shadow-text-blue rounded-lg focus:outline-none focus:border-text-blue"
+          className="w-full px-3 py-2 shadow-text-blue rounded-lg focus:outline-none focus:border-text-blue"
         />
       </div>
     </div>

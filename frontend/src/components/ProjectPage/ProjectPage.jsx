@@ -18,7 +18,6 @@ function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -43,16 +42,16 @@ function ProjectPage() {
   }, [pathUsername, projectName]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p className="text-center">Loading...</p>;
   }
 
   if (error) {
-    return <p className="text-red-500">{error}</p>;
+    return <p className="text-center text-red-500">{error}</p>;
   }
 
   return (
-    <div className="h-full bg-home-white flex justify-center p-10">
-      <div className="w-3/5">
+    <div className="h-full bg-home-white flex justify-center p-4 sm:p-6 md:p-8 lg:p-10">
+      <div className="w-full max-w-3xl lg:w-3/5 mx-auto">
         <Title project={project} />
         <Introduction project={project}/>
         <Images project={project} />

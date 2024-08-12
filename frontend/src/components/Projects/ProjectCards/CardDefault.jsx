@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import { Link, useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import axios from "axios";
 import { USER_ENDPOINTS } from "../../../services/apiService";
@@ -12,31 +11,9 @@ TimeAgo.addLocale(en);
 
 const CardDefault = ({ project, isUserAuthenticate }) => {
   const { thumbnail, name, description, updatedAt, _id } = project;
-  const { username } = useParams();
-  const [authUsername, setAuthUsername] = useState("");
   const [timeAgo, setTimeAgo] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchUsername = async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         USER_ENDPOINTS.FETCH_USER_DATA,
-  //         {},
-  //         {
-  //           withCredentials: true,
-  //         }
-  //       );
-  //       setAuthUsername(response.data.data.username);
-  //     } catch (error) {
-  //       console.error("Error fetching username:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchUsername();
-  // }, []);
 
   const handleProjectClick = () => {
     navigate(`${name}/`);
@@ -68,28 +45,30 @@ const CardDefault = ({ project, isUserAuthenticate }) => {
     setTimeAgo(formattedTime);
   }, [updatedAt]);
 
-
   return (
-    <div className="flex w-3/5 h-full bg-home-white py-10 border-b-2 border-black justify-center items-center">
-      <img className="h-1/4 w-1/3 rounded-md" src={thumbnail} alt="" />
-      <div className="w-2/3 h-full flex flex-col justify-start px-2 gap-4">
-        <h1 className="text-2xl font-bold">{name}</h1>
+    <div className="flex flex-col lg:flex-row w-full md:w-3/5 h-full bg-home-white py-5 md:py-10 border-b-2 border-black justify-center items-center px-4 md:px-0 ">
+      <img className="hidden lg:flex h-1/3 md:h-1/2 w-full md:w-2/3 lg:h-1/3 lg:w-1/4 rounded-md object-cover" src={thumbnail} alt="" />
+      <div className="w-full md:w-2/3 h-full flex flex-col justify-start  px-2 md:px-4 gap-4">
+        <h1 className="text-xl md:text-2xl font-bold">{name}</h1>
         <p className="text-xs text-white bg-text-blue p-1 w-full">
           Last updated {timeAgo}
         </p>
-        <p className="text-black font-normal font-sans text-md">
+        <div className="flex w-full justify-center items-center">
+        <img className="lg:hidden h-1/3 md:h-1/2 w-full md:w-2/3 lg:h-1/3 lg:w-1/4 rounded-md object-cover" src={thumbnail} alt="" />
+        </div>
+        <p className="text-black font-normal font-sans text-sm md:text-md">
           {description}
         </p>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <button
-            className="text-black text-start bg-button-red hover:bg-home-white hover:border-button-red border-2 w-fit px-3 py-1"
+            className="text-black text-start bg-button-red hover:bg-home-white hover:border-button-red border-2 w-full md:w-auto px-3 py-1 justify-center items-center flex"
             onClick={handleProjectClick}
           >
             Let's see the project!
           </button>
           {isUserAuthenticate && (
             <button
-              className="rounded text-black text-start text-3xl bg-red-500 hover:bg-home-white hover:border-red-500 border-2 w-fit px-3 py-1"
+              className="rounded text-black text-start text-2xl md:text-3xl bg-red-500 hover:bg-home-white hover:border-red-500 border-2 w-full md:w-auto px-3 py-1 mt-4 md:mt-0 justify-center items-center flex"
               onClick={() => setIsPopupOpen(true)}
             >
               <MdOutlineDeleteOutline />

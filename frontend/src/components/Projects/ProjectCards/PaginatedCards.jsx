@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
 import ProjectCards from "./ProjectCards";
 
@@ -33,10 +33,10 @@ function PaginatedCards({ projectsPerPage, projects, handleAddProjectClick, isUs
         pageCount={pageCount}
         previousLabel="< Prev"
         renderOnZeroPageCount={null}
-        containerClassName="flex text-xl w-2/5 justify-center gap-2"
-        pageClassName="border-2 w-16 rounded text-center border-black hover:underline"
-        previousClassName="mr-10 border-2 w-20 rounded text-center border-black hover:underline"
-        nextClassName="ml-10 border-2 w-20 rounded text-center border-black hover:underline"
+        containerClassName="flex text-sm md:text-base lg:text-xl w-full md:w-3/5 lg:w-2/5 justify-center gap-2"
+        pageClassName="border-2 w-10 md:w-12 lg:w-16 rounded text-center border-black hover:underline"
+        previousClassName="mr-4 md:mr-6 lg:mr-10 border-2 w-12 md:w-14 lg:w-20 rounded text-center border-black hover:underline"
+        nextClassName="ml-4 md:ml-6 lg:ml-10 border-2 w-12 md:w-14 lg:w-20 rounded text-center border-black hover:underline"
         activeClassName="bg-black text-white"
       />
     </>
