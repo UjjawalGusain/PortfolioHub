@@ -48,10 +48,10 @@ const AddResumeButton = ({ userData, handleResumeUploaded }) => {
   return (
     <>
       <button
-        className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out"
+        className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out items-center justify-center"
         onClick={handleAddResumeClick}
       >
-        {userData.resume ? "Update" : "Add"} Resume <IoMdAddCircle className="relative top-1 ml-5" />
+        {userData.resume ? "Update" : "Add"} Resume <IoMdAddCircle className="relative ml-5" />
       </button>
       <input
         type="file"

@@ -63,23 +63,23 @@ function Home() {
   
   return (
     <div className="h-full bg-home-white">
-      <div className="px-16 flex">
-        <div className="w-3/5">
+      <div className=" justify-center items-center lg:px-16 flex lg:flex-row flex-col-reverse">
+        <div className="w-3/5 py-6 lg:p-0">
           <div>
-            <p className="text-3xl mb-5">Hello!</p>
-            <p className="text-7xl mb-3">
+            <p className="md:text-3xl text-xl mb-5 ">Hello!</p>
+            <p className="md:text-7xl text-5xl mb-3">
               I'm <span className="text-home-gold">{userData.fullname}</span>
             </p>
-            <p className="text-4xl mb-4">{userData.position}</p>
-            <p className="text-lg">{userData.description}</p>
+            <p className="md:text-4xl text-2xl mb-4">{userData.position}</p>
+            <p className="md:text-lg text-base">{userData.description}</p>
           </div>
-          <div className="my-5 flex gap-3">
+          <div className="my-5 flex md:flex-row gap-3 flex-col">
             {userData.resume && (
               <button
-                className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out"
+                className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red transition-colors duration-300 ease-in-out items-center justify-center"
                 onClick={handleShowResume}
               >
-                Show Resume <FaDownload className="relative top-1 ml-5" />
+                Show Resume <FaDownload className="relative ml-5" />
               </button>
             )}
 
@@ -93,7 +93,7 @@ function Home() {
         </div>
 
         <div className="flex justify-center items-center w-2/5">
-          <div className="relative w-80 h-80">
+          <div className="relative lg:size-80 md:size-52 sm:size-44 size-32">
             <div className="absolute top-0 left-0 w-full h-full rounded-full"></div>
             {userData.profilePic && (
               <>
@@ -108,7 +108,8 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between p-10 pt-5 text-center w-full mt-36">
+
+      <div className="flex md:flex-row flex-col justify-between p-10 pt-5 text-center w-full mt-36">
         <div className="flex justify-around">
           <div className="m-5 mr-10">
             {githubData && (
@@ -137,7 +138,7 @@ function Home() {
             href={`https://github.com/${userData.githubId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red"
+            className="bg-button-red text-white flex px-3 py-1 rounded-sm border-2 hover:bg-home-white hover:text-button-red hover:border-button-red items-center justify-center"
           >
             Come Visit my Github
           </a>
