@@ -98,10 +98,10 @@ function useFetchAllData() {
         }
     };
 
-    if (fetchStatus.profile && (username !== prevUsernameRef.current || !githubData)) {
+    if (username !== prevUsernameRef.current || !githubData) {
       fetchGithubData();
     }
-  }, [dispatch, username, fetchStatus.profile]);
+  }, [dispatch, userData, fetchStatus.github]);
 
   // Fetch projects
   useEffect(() => {
