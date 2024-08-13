@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { USER_ENDPOINTS } from "../../services/apiService";
+import axios from 'axios';
+
 
 function Signup() {
   const {
@@ -10,7 +12,6 @@ function Signup() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-
 
   const positions = [
     "Full Stack Developer",
@@ -46,28 +47,36 @@ function Signup() {
   ];
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("username", data.username);
-    formData.append("fullname", data.fullname);
-    formData.append("email", data.email);
-    formData.append("githubId", data.githubId);
-    formData.append("password", data.password);
-    formData.append("description", data.description);
-    formData.append("position", data.position);
-    formData.append("profilePic", data.profilePic[0]);
-    formData.append("coverImg", data.coverImg[0]);
+    try {
+      const formData = new FormData();
+      formData.append("username", data.username);
+      formData.append("fullname", data.fullname);
+      formData.append("email", data.email);
+      formData.append("githubId", data.githubId);
+      formData.append("password", data.password);
+      formData.append("description", data.description);
+      formData.append("position", data.position);
+      formData.append("profilePic", data.profilePic[0]);
+      formData.append("coverImg", data.coverImg[0]);
 
+      const response = await axios.post(USER_ENDPOINTS.REGISTER, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        navigate("/signup/verify-otp");
+      } else {
+        console.error("Signup failed", response.data);
+        alert("Signup failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form", error);
+      alert("An error occurred. Please try again.");
+    }
   };
 
-  const { user } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    console.log("User: ", user);
-    
-    if (user) {
-      navigate("/signup/verify-otp");
-    }
-  }, [user, navigate]);
 
   return (
     <div className="flex justify-center items-center h-full bg-home-white p-20">
@@ -260,8 +269,7 @@ function Signup() {
         </div>
       </div>
     </div>
-  ); 
+  );
 }
 
 export default Signup;
-
