@@ -15,7 +15,11 @@ function Login() {
 
   const onSubmit = async (data) => {
     try {
+      console.log("Data: ", data);
+      
       const user = await dispatch(login(data)).unwrap();
+      console.log("User: ", user);
+      
       navigate(`/user/${user.username}/home`);
     } catch (error) {
       console.error("Login failed:", error);
