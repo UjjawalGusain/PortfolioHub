@@ -141,7 +141,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // Else, generate an access token and a refresh token
   // Send cookies
   // Send success response
-
+  
   const { email, username, password } = req.body;
   //    console.log(req.body);
   // verifying if all required fields are filled
