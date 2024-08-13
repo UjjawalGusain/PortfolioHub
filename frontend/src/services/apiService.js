@@ -1,7 +1,7 @@
 // USER ENDPOINTS
 const USER_ENDPOINTS = {
   REGISTER: `/api/v1/users/register`,
-  LOGIN: `https://portfolio-hub-backend.vercel.app/api/v1/users/login`,
+  LOGIN: `/api/v1/users/login`,
   LOGOUT: `/api/v1/users/logout`,
   REFRESH_TOKEN: `/api/v1/users/refresh-token`,
   VERIFY_OTP: `/api/v1/users/verify-otp`,
