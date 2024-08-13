@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 app.use(cors({
-    origin: '*',
+    origin: 'https://portfolio-hub-omega.vercel.app/',
     credentials: true,
 }))
 

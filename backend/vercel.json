@@ -1,11 +1,19 @@
 {
-    "version": 2,
-    "name": "portfolio-app-backend",
-    "builds": [
-      { "src": "src/index.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "/src/index.js" }
-    ]
-  }
-  
+  "version": 2,
+  "name": "portfolio-app-backend",
+  "builds": [
+    {
+      "src": "src/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/index.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ]
+}
