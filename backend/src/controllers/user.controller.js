@@ -754,9 +754,13 @@ const addCertification = asyncHandler(async (req, res) => {
     if (req.file) {  // Change to req.file for single file
       const certificateImgBuffer = req.file.buffer;  // Get the buffer from Multer's memory storage
       const fileName = req.file.originalname;
+      console.log("1111111111");
+      
 
       try {
         const uploadedCertificate = await uploadFileToCloudinary(certificateImgBuffer, fileName);  // Upload directly to Cloudinary
+        console.log("Upload: ", uploadedCertificate);
+        
         certificateUrl = uploadedCertificate.url || "";
       } catch (uploadError) {
         throw new ApiError(500, `Error uploading certificate: ${uploadError.message}`);
@@ -768,6 +772,9 @@ const addCertification = asyncHandler(async (req, res) => {
       description,
       certificateImg: certificateUrl,
     };
+
+    console.log("Certificate: ", certificate);
+    
 
     const newCertificate = await Certification.create(certificate);
 
