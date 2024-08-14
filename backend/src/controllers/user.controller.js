@@ -687,6 +687,55 @@ const sendEmail = asyncHandler(async (req, res) => {
   }
 });
 
+// const addCertification = asyncHandler(async (req, res) => {
+//   try {
+//     const user = req.user;
+//     if (!user) {
+//       throw new ApiError(404, "User not found");
+//     }
+
+//     const { title, description } = req.body;
+
+//     if (!title || !description) {
+//       throw new ApiError(400, "Missing required certificate data");
+//     }
+
+//     let certificateUrl = "";
+
+//     if (req.files && req.files.certificateImg) {
+//       const certificateImg = req.files.certificateImg[0];
+//       const certificateImgPath = certificateImg.path;
+
+//       try {
+//         const uploadedCertificate = await uploadFileToCloudinary(certificateImgPath);
+//         certificateUrl = uploadedCertificate.url || "";
+//       } catch (uploadError) {
+//         throw new ApiError(500, `Error uploading certificate: ${uploadError.message}`);
+//       }
+//     }
+
+//     const certificate = {
+//       title,
+//       description,
+//       certificateImg: certificateUrl,
+//     };
+
+//     const newCertificate = await Certification.create(certificate);
+
+//     user.certifications.push(newCertificate._id);
+  
+//     await user.save();
+//     const newUser = await User.findById(user._id)
+//     return res.status(200).json(new ApiResponse(200, newCertificate, "New certificate added successfully"));
+//   } catch (error) {
+//     if (error instanceof ApiError) {
+//       throw error;
+//     } else {
+//       throw new ApiError(500, "Internal Server Error while adding certificate");
+//     }
+//   }
+// });
+
 const addCertification = asyncHandler(async (req, res) => {
   try {
     const user = req.user;
@@ -702,12 +751,12 @@ const addCertification = asyncHandler(async (req, res) => {
 
     let certificateUrl = "";
 
-    if (req.files && req.files.certificateImg) {
-      const certificateImg = req.files.certificateImg[0];
-      const certificateImgPath = certificateImg.path;
+    if (req.file) {  // Change to req.file for single file
+      const certificateImgBuffer = req.file.buffer;  // Get the buffer from Multer's memory storage
+      const fileName = req.file.originalname;
 
       try {
-        const uploadedCertificate = await uploadFileToCloudinary(certificateImgPath);
+        const uploadedCertificate = await uploadFileToCloudinary(certificateImgBuffer, fileName);  // Upload directly to Cloudinary
         certificateUrl = uploadedCertificate.url || "";
       } catch (uploadError) {
         throw new ApiError(500, `Error uploading certificate: ${uploadError.message}`);
@@ -723,9 +772,9 @@ const addCertification = asyncHandler(async (req, res) => {
     const newCertificate = await Certification.create(certificate);
 
     user.certifications.push(newCertificate._id);
-  
+
     await user.save();
-    const newUser = await User.findById(user._id)
+    const newUser = await User.findById(user._id);
     return res.status(200).json(new ApiResponse(200, newCertificate, "New certificate added successfully"));
   } catch (error) {
     if (error instanceof ApiError) {
