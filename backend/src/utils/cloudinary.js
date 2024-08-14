@@ -41,20 +41,24 @@ const uploadFileToCloudinary = async (fileBuffer, fileName) => {
         console.log("File uploading...");
 
         if (!fileBuffer) return null;
-        
-        const response = await cloudinary.uploader.upload_stream(
-            {
-                resource_type: "auto",
-                public_id: fileName,
-            },
-            (error, result) => {
-                if (error) {
-                    console.error("Cloudinary upload failed:", error);
-                    return null;
+
+        // Create and return a promise
+        const response = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+                {
+                    resource_type: "auto",
+                    public_id: fileName,
+                },
+                (error, result) => {
+                    if (error) {
+                        console.error("Cloudinary upload failed:", error);
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
                 }
-                return result;
-            }
-        ).end(fileBuffer);
+            ).end(fileBuffer); 
+        });
 
         return response;
     } catch (error) {
